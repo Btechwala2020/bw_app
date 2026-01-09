@@ -37,6 +37,13 @@ const QuantumPdfListScreen = () => {
   const [pdfs, setPdfs] = useState([]);
   const [loading, setLoading] = useState(true);
 
+  const COLORS = ['#3b82f6', '#8b5cf6', '#ec4899', '#f59e0b', '#10b981', '#ef4444'];
+  const getColorForKey = (key) => {
+    if (!key) return COLORS[0];
+    const sum = key.split('').reduce((s, c) => s + c.charCodeAt(0), 0);
+    return COLORS[sum % COLORS.length];
+  };
+
   useEffect(() => {
     const fetchAllPapers = async () => {
       try {
@@ -91,24 +98,31 @@ const QuantumPdfListScreen = () => {
     Linking.openURL(pdfUrl);
   };
 
-  const renderItem = ({ item }) => (
-    <TouchableOpacity
-      style={styles.card}
-      onPress={() => openPdf(item.semesterKey, item.subjectKey, item.file)}
-    >
-      <View style={{ flex: 1 }}>
-        <Text style={styles.pdfName}>{item.name}</Text>
-        <Text style={styles.semesterText}>
-          {item.semesterKey.toUpperCase()} • {item.subjectKey}
-        </Text>
-        <Text style={styles.yearText}>
-          Year: {item.year || 'N/A'}
-        </Text>
-      </View>
+  const renderItem = ({ item }) => {
+    const color = getColorForKey(item.subjectKey || item.semesterKey);
+    return (
+      <TouchableOpacity
+        style={[styles.card, { borderLeftColor: color }]}
+        onPress={() => openPdf(item.semesterKey, item.subjectKey, item.file)}
+      >
+        <View style={styles.cardInner}>
+          <View style={[styles.iconCircle, { backgroundColor: color + '22' }]}>
+            <Text style={[styles.iconDot, { color }]}>{(item.subjectKey || '').charAt(0).toUpperCase()}</Text>
+          </View>
 
-      <Text style={styles.arrow}>›</Text>
-    </TouchableOpacity>
-  );
+          <View style={styles.textWrap}>
+            <Text style={styles.pdfName}>{item.name}</Text>
+            <Text style={styles.semesterText}>{item.semesterKey.toUpperCase()} • {item.subjectKey}</Text>
+            <Text style={styles.yearText}>Year: {item.year || 'N/A'}</Text>
+          </View>
+        </View>
+
+        <View style={[styles.chev, { backgroundColor: color + '1a' }]}> 
+          <Text style={[styles.chevText, { color }]}>›</Text>
+        </View>
+      </TouchableOpacity>
+    );
+  };
 
   if (loading) {
     return (
@@ -166,18 +180,50 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   card: {
-    backgroundColor: '#171717',
-    padding: 18,
+    backgroundColor: '#0f0f12',
     borderRadius: 14,
+    padding: 16,
     marginBottom: 14,
     flexDirection: 'row',
-    justifyContent: 'space-between',
     alignItems: 'center',
+    justifyContent: 'space-between',
+    borderLeftWidth: 4,
+    ...Platform.select({
+      ios: {
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 6 },
+        shadowOpacity: 0.18,
+        shadowRadius: 12,
+      },
+      android: {
+        elevation: 6,
+      },
+    }),
+  },
+  cardInner: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    flex: 1,
+  },
+  iconCircle: {
+    width: 56,
+    height: 56,
+    borderRadius: 14,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginRight: 12,
+  },
+  iconDot: {
+    fontSize: 20,
+    fontWeight: '800',
+  },
+  textWrap: {
+    flex: 1,
   },
   pdfName: {
     color: '#fff',
-    fontSize: 15,
-    fontWeight: '500',
+    fontSize: 16,
+    fontWeight: '700',
     marginBottom: 6,
   },
   semesterText: {
@@ -190,11 +236,17 @@ const styles = StyleSheet.create({
     color: '#94a3b8',
     fontSize: 12,
   },
-  arrow: {
-    color: '#999',
-    fontSize: 28,
-    fontWeight: 'bold',
+  chev: {
+    width: 44,
+    height: 44,
+    borderRadius: 12,
+    alignItems: 'center',
+    justifyContent: 'center',
     marginLeft: 12,
+  },
+  chevText: {
+    fontSize: 20,
+    fontWeight: '800',
   },
   loadingText: {
     color: '#fff',

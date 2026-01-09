@@ -51,8 +51,12 @@ const HomeScreen = () => {
                     active
                 />
                 <NavItem
-                    label="Notes"
+                    label="Topics"
                     icon={require('../assets/icons/notes.png')}
+                    onPress={() => {
+                        console.log('TOPICS CLICKED');
+                        navigation.navigate('TopicsYearLevel');
+                    }}
                 />
                 <NavItem
                     label="Quantum"

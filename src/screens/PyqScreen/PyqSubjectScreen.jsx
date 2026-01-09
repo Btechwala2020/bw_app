@@ -1,13 +1,14 @@
 import React from 'react';
 import {
-    View,
-    Text,
-    StyleSheet,
-    TouchableOpacity,
-    FlatList,
+  View,
+  Text,
+  StyleSheet,
+  TouchableOpacity,
+  FlatList,
+  Platform,
 } from 'react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
-import GradientBackground from '../components/GradientBackground';
+import GradientBackground from '../../components/GradientBackground';
 
 const SUBJECTS_BY_SEM = {
     sem1: [
@@ -126,89 +127,171 @@ const SUBJECTS_BY_SEM = {
     ],
 };
 
+const YEAR_MAPPING = {
+  '1st Year': ['sem1', 'sem2'],
+  '2nd Year': ['sem3', 'sem4'],
+  '3rd Year': ['sem5', 'sem6'],
+  '4th Year': ['sem7', 'sem8'],
+};
+
 const PyqSubjectScreen = () => {
-    const navigation = useNavigation();
-    const route = useRoute();
-    const { semesterKey } = route.params;
-  
-    const subjects = SUBJECTS_BY_SEM[semesterKey] || [];
-  
-    return (
-      <View style={styles.container}>
-        <Text style={styles.title}>Choose Subject</Text>
-  
-        <FlatList
-          data={subjects}
-          keyExtractor={(item) => item.key}
-          renderItem={({ item }) => (
+  const navigation = useNavigation();
+  const route = useRoute();
+  const { semesterKey, yearLevel, semesters } = route.params || {};
+
+  let subjects = [];
+
+  if (yearLevel) {
+    const sems = YEAR_MAPPING[yearLevel] || semesters || [];
+    const map = {};
+    sems.forEach((s) => {
+      const arr = SUBJECTS_BY_SEM[s] || [];
+      arr.forEach((sub) => {
+        if (!map[sub.key]) map[sub.key] = sub.name;
+      });
+    });
+    subjects = Object.keys(map).map((k) => ({ key: k, name: map[k] }));
+  } else if (semesterKey) {
+    subjects = SUBJECTS_BY_SEM[semesterKey] || [];
+  }
+
+  const COLORS = ['#3b82f6', '#8b5cf6', '#ec4899', '#f59e0b', '#10b981', '#ef4444'];
+  const getColorForKey = (key) => {
+    if (!key) return COLORS[0];
+    const sum = key.split('').reduce((s, c) => s + c.charCodeAt(0), 0);
+    return COLORS[sum % COLORS.length];
+  };
+
+  const findSemesterForSubject = (subjectKey, yearLevelParam) => {
+    if (semesterKey) return semesterKey;
+    const sems = YEAR_MAPPING[yearLevelParam] || semesters || [];
+    for (const s of sems) {
+      const arr = SUBJECTS_BY_SEM[s] || [];
+      if (arr.find((x) => x.key === subjectKey)) return s;
+    }
+    return sems[0] || 'sem1';
+  };
+
+  return (
+    <View style={styles.container}>
+      <Text style={styles.title}>{yearLevel ? yearLevel : (semesterKey || '').toUpperCase()}</Text>
+
+      <FlatList
+        data={subjects}
+        keyExtractor={(item) => item.key}
+        renderItem={({ item }) => {
+          const color = getColorForKey(item.key);
+          const targetSemester = findSemesterForSubject(item.key, yearLevel);
+          return (
             <TouchableOpacity
-              style={styles.card}
+              style={[styles.card, { borderLeftColor: color }]}
               onPress={() =>
                 navigation.navigate('PyqPdfList', {
-                  semesterKey,
+                  semesterKey: targetSemester,
                   subjectKey: item.key,
                   subjectName: item.name,
                 })
               }
             >
-             
+              <View style={styles.cardInner}>
+                <View style={[styles.iconCircle, { backgroundColor: color + '22' }]}>
+                  <Text style={[styles.iconDot, { color }]}>{item.name.charAt(0)}</Text>
+                </View>
 
-<View>
-                 <Text style={styles.cardText}>{item.name}</Text>
-                <Text style={styles.meta}>Tap to view PYQs</Text>
-            </View>
+                <View style={styles.textWrap}>
+                  <Text style={styles.cardText}>{item.name}</Text>
+                  <Text style={styles.meta}>Tap to view PYQs</Text>
+                </View>
+              </View>
 
-            <View style={styles.arrowWrap}>
-                <Text style={styles.arrow}>›</Text>
-            </View>
+              <View style={[styles.chev, { backgroundColor: color + '1a' }]}> 
+                <Text style={[styles.chevText, { color }]}>›</Text>
+              </View>
             </TouchableOpacity>
-          )}
-        />
-      </View>
-    );
-  };
+          );
+        }}
+      />
+    </View>
+  );
+};
   
   export default PyqSubjectScreen;
-  
+
   const styles = StyleSheet.create({
     container: {
       flex: 1,
-      backgroundColor: '#0b0b0b',
+      backgroundColor: '#07070a',
       padding: 16,
     },
     title: {
       color: '#fff',
       fontSize: 22,
-      fontWeight: '600',
-      marginBottom: 20,
+      fontWeight: '700',
+      marginBottom: 14,
     },
     card: {
-      backgroundColor: '#171717', 
-      padding: 18,
+      backgroundColor: '#0f0f12',
       borderRadius: 14,
+      padding: 16,
       marginBottom: 14,
       flexDirection: 'row',
-      justifyContent: 'space-between',
       alignItems: 'center',
+      justifyContent: 'space-between',
+      borderLeftWidth: 4,
+      ...Platform.select({
+        ios: {
+          shadowColor: '#000',
+          shadowOffset: { width: 0, height: 6 },
+          shadowOpacity: 0.18,
+          shadowRadius: 12,
+        },
+        android: {
+          elevation: 6,
+        },
+      }),
+    },
+    cardInner: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      flex: 1,
+    },
+    iconCircle: {
+      width: 56,
+      height: 56,
+      borderRadius: 14,
+      alignItems: 'center',
+      justifyContent: 'center',
+      marginRight: 12,
+    },
+    iconDot: {
+      fontSize: 20,
+      fontWeight: '800',
+      color: '#fff'
+    },
+    textWrap: {
+      flex: 1,
     },
     cardText: {
       color: '#fff',
       fontSize: 16,
-    },
-    arrow: {
-      color: '#999',
-      fontSize: 28,
-      fontWeight: 'bold',
+      fontWeight: '700',
     },
     meta: {
+      marginTop: 6,
       fontSize: 12,
-      fontWeight: '400',
-      color: '#FFFFFF',
+      color: '#9ca3af',
     },
-    meta: {
-      marginTop: 4,
-      fontSize: 13,
-      color: '#B0B0B0',
+    chev: {
+      width: 44,
+      height: 44,
+      borderRadius: 12,
+      alignItems: 'center',
+      justifyContent: 'center',
+      marginLeft: 12,
+    },
+    chevText: {
+      fontSize: 20,
+      fontWeight: '800',
     },
   });
   

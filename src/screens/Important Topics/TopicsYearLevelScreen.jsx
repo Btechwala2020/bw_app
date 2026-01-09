@@ -16,7 +16,7 @@ const YEAR_LEVELS = [
     { id: '4', level: '4th Year', subtitle: 'Semesters 7 & 8', color: '#f59e0b', sems: 'Sem 7 · Sem 8' },
 ];
 
-const QuantumYearLevelScreen = () => {
+const TopicsYearLevelScreen = () => {
     const navigation = useNavigation();
 
     return (
@@ -26,8 +26,8 @@ const QuantumYearLevelScreen = () => {
                 showsVerticalScrollIndicator={false}
             >
                 <View style={styles.headerWrap}>
-                    <Text style={styles.title}>Select Year Level</Text>
-                    <Text style={styles.subtitle}>Open Quantum papers for your year</Text>
+                    <Text style={styles.title}>Choose Your Year</Text>
+                    <Text style={styles.subtitle}>Quick access to important topics & papers</Text>
                 </View>
 
                 <View style={styles.grid}>
@@ -37,7 +37,7 @@ const QuantumYearLevelScreen = () => {
                             activeOpacity={0.9}
                             style={[styles.card, { borderLeftColor: item.color }]}
                             onPress={() =>
-                                navigation.navigate('QuantumPdfList', {
+                                navigation.navigate('ImportantTopics', {
                                     yearLevel: item.level,
                                 })
                             }
@@ -64,7 +64,7 @@ const QuantumYearLevelScreen = () => {
     );
 };
 
-export default QuantumYearLevelScreen;
+export default TopicsYearLevelScreen;
 
 const styles = StyleSheet.create({
     root: {
