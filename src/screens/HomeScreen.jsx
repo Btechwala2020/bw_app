@@ -55,14 +55,18 @@ const HomeScreen = () => {
                     icon={require('../assets/icons/notes.png')}
                 />
                 <NavItem
-                    label="Syllabus"
-                    icon={require('../assets/icons/syllabus.png')}
+                    label="Quantum"
+                    icon={require('../assets/icons/pyq.png')}
+                    onPress={() => {
+                        console.log('QUANTUM CLICKED');
+                        navigation.navigate('QuantumYearLevel');
+                    }}
                 />
                 <NavItem
                     label="PYQ"
                     icon={require('../assets/icons/pyq.png')}
                     onPress={() => {
-                        console.log('PYQ CLICKED');   // 🔥 DEBUG
+                        console.log('PYQ CLICKED');
                         navigation.navigate('PyqSemester');
                     }}
                 />
@@ -79,7 +83,7 @@ export default HomeScreen;
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: COLORS.bg,
+        backgroundColor:"#0B0B0F",
     },
 
     hero: {

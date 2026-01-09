@@ -7,6 +7,8 @@ import HomeScreen from '../screens/HomeScreen';
 import PyqSemesterScreen from '../screens/PyqSemesterScreen';
 import PyqSubjectScreen from '../screens/PyqSubjectScreen';
 import PyqPdfListScreen from '../screens/PyqPdfListScreen';
+import QuantumYearLevelScreen from '../screens/Quantum/QuantumYearLevelScreen';
+import QuantumPdfListScreen from '../screens/Quantum/QuantumPdfListScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -45,6 +47,18 @@ const AppNavigator = () => {
         name="PyqPdfList"
         component={PyqPdfListScreen}
         options={{ title: 'Previous Year Papers' }}
+      />
+
+      <Stack.Screen
+        name="QuantumYearLevel"
+        component={QuantumYearLevelScreen}
+        options={{ title: 'Select Year Level' }}
+      />
+
+      <Stack.Screen
+        name="QuantumPdfList"
+        component={QuantumPdfListScreen}
+        options={{ title: 'Quantum Papers' }}
       />
     </Stack.Navigator>
   );
