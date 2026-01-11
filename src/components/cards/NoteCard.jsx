@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, StyleSheet, Image, TouchableOpacity } from 'react-native';
+import { Text, StyleSheet, Image, TouchableOpacity } from 'react-native';
 import { COLORS } from '../../theme/colors';
 
 const NoteCard = ({ title, price }) => {

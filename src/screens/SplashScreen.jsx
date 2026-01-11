@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { View, StyleSheet, StatusBar, Text } from 'react-native';
+import { View, StyleSheet, StatusBar } from 'react-native';
 import LottieView from 'lottie-react-native';
 
 const SplashScreen = ({ onFinish }) => {
@@ -7,7 +7,7 @@ const SplashScreen = ({ onFinish }) => {
   useEffect(() => {
     const timer = setTimeout(onFinish, 4500);
     return () => clearTimeout(timer);
-  }, []);
+  }, [onFinish]);
 
   return (
     <>

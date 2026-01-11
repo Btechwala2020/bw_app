@@ -3,12 +3,11 @@ import {
   View,
   Text,
   StyleSheet,
-  ScrollView,
   TouchableOpacity,
   FlatList,
   ActivityIndicator,
 } from 'react-native';
-import { useNavigation, useRoute } from '@react-navigation/native';
+import { useRoute, useNavigation } from '@react-navigation/native';
 
 const BASE_URL = 'https://pub-8d76bb5c3d9f47529f84f1c651531e3a.r2.dev';
 
@@ -92,8 +91,8 @@ const SUBJECT_NAMES = {
 };
 
 const ImportantTopicsScreen = () => {
-  const navigation = useNavigation();
   const route = useRoute();
+  const navigation = useNavigation();
   const { yearLevel } = route.params;
 
   const [subjects, setSubjects] = useState([]);
@@ -146,7 +145,12 @@ const ImportantTopicsScreen = () => {
     <TouchableOpacity
       style={styles.subjectCard}
       onPress={() => {
-        console.log('Subject clicked:', item.name);
+        // Navigate to PDF list for this subject
+        navigation.navigate('PyqPdfList', {
+          semesterKey: item.semester,
+          subjectKey: item.key,
+          subjectName: item.name,
+        });
       }}
     >
       <View style={styles.cardHeader}>

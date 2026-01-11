@@ -1,158 +1,152 @@
-import React from 'react';
+import React from "react";
 import {
-    View,
-    Text,
-    TouchableOpacity,
-    StyleSheet,
-    ScrollView,
-    Platform,
-} from 'react-native';
-import { useNavigation } from '@react-navigation/native';
+  View,
+  Text,
+  TouchableOpacity,
+  StyleSheet,
+  ScrollView,
+  Platform,
+} from "react-native";
+import { useNavigation } from "@react-navigation/native";
+import Icon from "react-native-vector-icons/Ionicons";
 
 const YEAR_LEVELS = [
-    { id: '1', level: '1st Year', subtitle: 'Semesters 1 & 2', color: '#3b82f6', sems: 'Sem 1 · Sem 2' },
-    { id: '2', level: '2nd Year', subtitle: 'Semesters 3 & 4', color: '#8b5cf6', sems: 'Sem 3 · Sem 4' },
-    { id: '3', level: '3rd Year', subtitle: 'Semesters 5 & 6', color: '#ec4899', sems: 'Sem 5 · Sem 6' },
-    { id: '4', level: '4th Year', subtitle: 'Semesters 7 & 8', color: '#f59e0b', sems: 'Sem 7 · Sem 8' },
+  { id: "1", level: "1st Year", sems: "Sem 1 · Sem 2" },
+  { id: "2", level: "2nd Year", sems: "Sem 3 · Sem 4" },
+  { id: "3", level: "3rd Year", sems: "Sem 5 · Sem 6" },
+  { id: "4", level: "4th Year", sems: "Sem 7 · Sem 8" },
 ];
 
-const TopicsYearLevelScreen = () => {
-    const navigation = useNavigation();
+export default function TopicsYearLevelScreen() {
+  const navigation = useNavigation();
 
-    return (
-        <View style={styles.root}>
-            <ScrollView
-                contentContainerStyle={styles.container}
-                showsVerticalScrollIndicator={false}
-            >
-                <View style={styles.headerWrap}>
-                    <Text style={styles.title}>Choose Your Year</Text>
-                    <Text style={styles.subtitle}>Quick access to important topics & papers</Text>
-                </View>
+  return (
+    <View style={styles.root}>
+      <ScrollView
+        contentContainerStyle={styles.container}
+        showsVerticalScrollIndicator={false}
+      >
+        {/* HEADER */}
+        <Text style={styles.title}>Choose Your Year</Text>
+        <Text style={styles.subtitle}>
+          Quick access to important topics & papers
+        </Text>
 
-                <View style={styles.grid}>
-                    {YEAR_LEVELS.map((item) => (
-                        <TouchableOpacity
-                            key={item.id}
-                            activeOpacity={0.9}
-                            style={[styles.card, { borderLeftColor: item.color }]}
-                            onPress={() =>
-                                navigation.navigate('ImportantTopics', {
-                                    yearLevel: item.level,
-                                })
-                            }
-                        >
-                            <View style={styles.cardInner}>
-                                <View style={[styles.iconCircle, { backgroundColor: item.color + '22' }]}>
-                                    <View style={[styles.iconDot, { backgroundColor: item.color }]} />
-                                </View>
+        {/* CARDS */}
+        {YEAR_LEVELS.map((item) => (
+          <TouchableOpacity
+            key={item.id}
+            activeOpacity={0.9}
+            style={styles.card}
+            onPress={() =>
+              navigation.navigate("ImportantTopics", {
+                yearLevel: item.level,
+              })
+            }
+          >
+            {/* LEFT */}
+            <View style={styles.left}>
+              <View style={styles.iconWrap}>
+                <Icon name="layers-outline" size={22} color="#ffffff" />
+              </View>
 
-                                <View style={styles.textWrap}>
-                                    <Text style={styles.cardTitle}>{item.level}</Text>
-                                    <Text style={styles.cardSub}>{item.sems}</Text>
-                                </View>
-                            </View>
+              <View>
+                <Text style={styles.cardTitle}>{item.level}</Text>
+                <Text style={styles.cardSub}>{item.sems}</Text>
+              </View>
+            </View>
 
-                            <View style={[styles.chev, { backgroundColor: item.color + '1a' }]}> 
-                                <Text style={[styles.chevText, { color: item.color }]}>›</Text>
-                            </View>
-                        </TouchableOpacity>
-                    ))}
-                </View>
-            </ScrollView>
-        </View>
-    );
-};
-
-export default TopicsYearLevelScreen;
-
+            {/* RIGHT */}
+            <Text style={styles.chev}>›</Text>
+          </TouchableOpacity>
+        ))}
+      </ScrollView>
+    </View>
+  );
+}
 const styles = StyleSheet.create({
-    root: {
-        flex: 1,
-        backgroundColor: '#07070a',
-    },
-    container: {
-        padding: 20,
-        paddingTop: 28,
-    },
-    headerWrap: {
-        marginBottom: 18,
-    },
-    title: {
-        color: '#fff',
-        fontSize: 26,
-        fontWeight: '800',
-    },
-    subtitle: {
-        color: '#9ca3af',
-        marginTop: 6,
-        fontSize: 13,
-    },
-    grid: {
-        marginTop: 6,
-    },
-    card: {
-        backgroundColor: '#0f0f12',
-        borderRadius: 14,
-        padding: 16,
-        marginBottom: 14,
-        flexDirection: 'row',
-        alignItems: 'center',
-        justifyContent: 'space-between',
-        borderLeftWidth: 4,
-        ...Platform.select({
-            ios: {
-                shadowColor: '#000',
-                shadowOffset: { width: 0, height: 6 },
-                shadowOpacity: 0.18,
-                shadowRadius: 12,
-            },
-            android: {
-                elevation: 6,
-            },
-        }),
-    },
-    cardInner: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        flex: 1,
-    },
-    iconCircle: {
-        width: 56,
-        height: 56,
-        borderRadius: 14,
-        alignItems: 'center',
-        justifyContent: 'center',
-        marginRight: 12,
-    },
-    iconDot: {
-        width: 16,
-        height: 16,
-        borderRadius: 8,
-    },
-    textWrap: {
-        flex: 1,
-    },
-    cardTitle: {
-        color: '#fff',
-        fontSize: 18,
-        fontWeight: '700',
-    },
-    cardSub: {
-        color: '#9ca3af',
-        marginTop: 4,
-        fontSize: 12,
-    },
-    chev: {
-        width: 44,
-        height: 44,
-        borderRadius: 12,
-        alignItems: 'center',
-        justifyContent: 'center',
-        marginLeft: 12,
-    },
-    chevText: {
-        fontSize: 20,
-        fontWeight: '800',
-    },
+  root: {
+    flex: 1,
+    backgroundColor: "#07070a",
+  },
+
+  container: {
+    padding: 16,
+    paddingTop: 24,
+  },
+
+  title: {
+    color: "#ffffff",
+    fontSize: 24,
+    fontWeight: "800",
+    marginBottom: 6,
+  },
+
+  subtitle: {
+    color: "#9ca3af",
+    fontSize: 13,
+    marginBottom: 20,
+  },
+
+  /* CARD */
+  card: {
+    backgroundColor: "#141417",
+    borderRadius: 22,
+    paddingVertical: 22,
+    paddingHorizontal: 20,
+    marginBottom: 16,
+
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+
+    borderWidth: 1,
+    borderColor: "rgba(255,255,255,0.15)",
+
+    ...Platform.select({
+      ios: {
+        shadowColor: "#000",
+        shadowOffset: { width: 0, height: 10 },
+        shadowOpacity: 0.35,
+        shadowRadius: 18,
+      },
+      android: {
+        elevation: 10,
+      },
+    }),
+  },
+
+  left: {
+    flexDirection: "row",
+    alignItems: "center",
+  },
+
+  iconWrap: {
+    width: 48,
+    height: 48,
+    borderRadius: 16,
+    borderWidth: 2,
+    borderColor: "#ffffff",
+    alignItems: "center",
+    justifyContent: "center",
+    marginRight: 16,
+  },
+
+  cardTitle: {
+    color: "#ffffff",
+    fontSize: 18,
+    fontWeight: "700",
+  },
+
+  cardSub: {
+    color: "#9ca3af",
+    fontSize: 13,
+    marginTop: 4,
+  },
+
+  chev: {
+    color: "#ffffff",
+    fontSize: 26,
+    fontWeight: "800",
+  },
 });

@@ -8,7 +8,6 @@ import {
   Platform,
 } from 'react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
-import GradientBackground from '../../components/GradientBackground';
 
 const SUBJECTS_BY_SEM = {
     sem1: [
