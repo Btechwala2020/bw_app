@@ -1,36 +1,37 @@
 import React from "react";
 import { View, Text, ScrollView, StyleSheet, Platform } from "react-native";
 import Icon from "react-native-vector-icons/Ionicons";
+import TopNavbarBack from '../../components/navigation/TopNavBarBack';
 
 export default function TermsConditionsScreen() {
   return (
-    <ScrollView style={styles.container} contentContainerStyle={styles.content}>
-      <View style={styles.header}>
-        <View style={styles.iconWrap}>
-          <Icon name="document-text-outline" size={28} color="#fff" />
+    <View style={{ flex: 1, backgroundColor: '#07070a' }}>
+      <TopNavbarBack title="Terms & Conditions" />
+      <ScrollView style={styles.container} contentContainerStyle={styles.content}>
+        <View style={styles.header}>
+          <View style={styles.iconWrap}>
+            <Icon name="document-text-outline" size={28} color="#fff" />
+          </View>
+          <View>
+            <Text style={styles.title}>Terms & Conditions</Text>
+            <Text style={styles.subtitle}>Please read carefully</Text>
+          </View>
         </View>
-        <View>
-          <Text style={styles.title}>Terms & Conditions</Text>
-          <Text style={styles.subtitle}>Please read carefully</Text>
+        <View style={styles.card}>
+          <Text style={styles.text}>
+            BTech Wala is provided for personal and educational use only.
+          </Text>
+          <Text style={styles.text}>
+            All study materials are shared for reference purposes and we do not
+            guarantee accuracy or exam results.
+          </Text>
+          <Text style={styles.text}>
+            Misuse, redistribution, or commercial use of app content is not
+            permitted.
+          </Text>
         </View>
-      </View>
-
-      <View style={styles.card}>
-        <Text style={styles.text}>
-          BTech Wala is provided for personal and educational use only.
-        </Text>
-
-        <Text style={styles.text}>
-          All study materials are shared for reference purposes and we do not
-          guarantee accuracy or exam results.
-        </Text>
-
-        <Text style={styles.text}>
-          Misuse, redistribution, or commercial use of app content is not
-          permitted.
-        </Text>
-      </View>
-    </ScrollView>
+      </ScrollView>
+    </View>
   );
 }
 const styles = StyleSheet.create({

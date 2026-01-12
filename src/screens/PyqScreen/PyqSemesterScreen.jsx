@@ -9,7 +9,7 @@ import {
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import Icon from "react-native-vector-icons/Ionicons";
-
+import TopNavbarBack from '../../components/navigation/TopNavBarBack';
 const YEAR_LEVELS = [
   {
     id: "1",
@@ -42,6 +42,7 @@ export default function PyqSemesterScreen() {
 
   return (
     <View style={styles.root}>
+       <TopNavbarBack title="About Us" />
       <ScrollView
         contentContainerStyle={styles.container}
         showsVerticalScrollIndicator={false}

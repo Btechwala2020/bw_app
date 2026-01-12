@@ -17,20 +17,6 @@ import { DRAWER_ROUTES } from "./drawerRoutes";
 const Drawer = createDrawerNavigator();
 const Stack = createNativeStackNavigator();
 
-/* ================= STACK ================= */
-function MainStackNavigator() {
-  return (
-    <Stack.Navigator screenOptions={{ headerShown: false }}>
-      {DRAWER_ROUTES.map((route) => (
-        <Stack.Screen
-          key={route.name}
-          name={route.name}
-          component={route.component}
-        />
-      ))}
-    </Stack.Navigator>
-  );
-}
 
 /* ================= DRAWER CONTENT ================= */
 function CustomDrawerContent(props) {
@@ -50,7 +36,7 @@ function CustomDrawerContent(props) {
         </View>
       </View>
 
-      {DRAWER_ROUTES.map((item) => (
+      {DRAWER_ROUTES.filter(item => !item.hidden).map((item) => (
         <TouchableOpacity
           key={item.name}
           activeOpacity={0.85}
@@ -83,43 +69,18 @@ export default function DrawerNavigatorStyled() {
   return (
     <Drawer.Navigator
       drawerContent={(props) => <CustomDrawerContent {...props} />}
-      screenOptions={({ navigation }) => ({
-        headerShown: true,
-        headerStyle: {
-          backgroundColor: "#07070a",
-          elevation: 0,
-          shadowOpacity: 0,
-        },
-        headerTitleAlign: "center",
-        headerTintColor: "#ffffff",
-
-        headerLeft: () => (
-          <TouchableOpacity
-            style={styles.headerBtn}
-            onPress={() =>
-              navigation.canGoBack()
-                ? navigation.goBack()
-                : navigation.openDrawer()
-            }
-          >
-            <Icon
-              name={
-                navigation.canGoBack()
-                  ? "arrow-back-outline"
-                  : "menu-outline"
-              }
-              size={22}
-              color="#ffffff"
-            />
-          </TouchableOpacity>
-        ),
-      })}
+      screenOptions={{
+        headerShown: false,
+      }}
     >
-      <Drawer.Screen
-        name="Main"
-        component={MainStackNavigator}
-        options={{ title: "BTech Wala" }}
-      />
+      {DRAWER_ROUTES.filter(route => !route.hidden).map((route) => (
+        <Drawer.Screen
+          key={route.name}
+          name={route.name}
+          component={route.component}
+          options={{ title: route.label }}
+        />
+      ))}
     </Drawer.Navigator>
   );
 }

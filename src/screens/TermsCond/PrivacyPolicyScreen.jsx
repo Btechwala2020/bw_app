@@ -1,39 +1,40 @@
 import React from "react";
 import { View, Text, ScrollView, StyleSheet, Platform } from "react-native";
 import Icon from "react-native-vector-icons/Ionicons";
+import TopNavbarBack from '../../components/navigation/TopNavBarBack';
 
 export default function PrivacyPolicyScreen() {
   return (
-    <ScrollView style={styles.container} contentContainerStyle={styles.content}>
-      {/* HEADER */}
-      <View style={styles.header}>
-        <View style={styles.iconWrap}>
-          <Icon name="shield-checkmark-outline" size={28} color="#fff" />
+    <View style={{ flex: 1, backgroundColor: '#07070a' }}>
+      <TopNavbarBack title="Privacy Policy" />
+      <ScrollView style={styles.container} contentContainerStyle={styles.content}>
+        {/* HEADER */}
+        <View style={styles.header}>
+          <View style={styles.iconWrap}>
+            <Icon name="shield-checkmark-outline" size={28} color="#fff" />
+          </View>
+          <View>
+            <Text style={styles.title}>Privacy Policy</Text>
+            <Text style={styles.subtitle}>Your privacy matters to us</Text>
+          </View>
         </View>
-        <View>
-          <Text style={styles.title}>Privacy Policy</Text>
-          <Text style={styles.subtitle}>Your privacy matters to us</Text>
+        {/* CARD */}
+        <View style={styles.card}>
+          <Text style={styles.text}>
+            BTech Wala respects your privacy. This application does not collect,
+            store, or share any personal information from users.
+          </Text>
+          <Text style={styles.text}>
+            We do not use advertisements, analytics tools, cookies, or tracking
+            technologies of any kind.
+          </Text>
+          <Text style={styles.text}>
+            Any information shared through the Contact Us section is used only to
+            respond to user queries.
+          </Text>
         </View>
-      </View>
-
-      {/* CARD */}
-      <View style={styles.card}>
-        <Text style={styles.text}>
-          BTech Wala respects your privacy. This application does not collect,
-          store, or share any personal information from users.
-        </Text>
-
-        <Text style={styles.text}>
-          We do not use advertisements, analytics tools, cookies, or tracking
-          technologies of any kind.
-        </Text>
-
-        <Text style={styles.text}>
-          Any information shared through the Contact Us section is used only to
-          respond to user queries.
-        </Text>
-      </View>
-    </ScrollView>
+      </ScrollView>
+    </View>
   );
 }
 const styles = StyleSheet.create({

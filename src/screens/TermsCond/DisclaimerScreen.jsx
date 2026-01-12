@@ -1,37 +1,39 @@
 import React from "react";
 import { View, Text, ScrollView, StyleSheet, Platform } from "react-native";
 import Icon from "react-native-vector-icons/Ionicons";
+import TopNavbarBack from '../../components/navigation/TopNavBarBack';
 
 export default function DisclaimerScreen() {
   return (
-    <ScrollView style={styles.container} contentContainerStyle={styles.content}>
-      <View style={styles.header}>
-        <View style={styles.iconWrap}>
-          <Icon name="alert-circle-outline" size={28} color="#fff" />
+    <View style={{ flex: 1, backgroundColor: '#07070a' }}>
+      <TopNavbarBack title="Disclaimer" />
+      <ScrollView style={styles.container} contentContainerStyle={styles.content}>
+        <View style={styles.header}>
+          <View className={styles.iconWrap}>
+            <Icon name="alert-circle-outline" size={28} color="#fff" />
+          </View>
+          <View>
+            <Text style={styles.title}>Disclaimer</Text>
+            <Text style={styles.subtitle}>Educational purpose only</Text>
+          </View>
         </View>
-        <View>
-          <Text style={styles.title}>Disclaimer</Text>
-          <Text style={styles.subtitle}>Educational purpose only</Text>
+        <View style={styles.card}>
+          <Text style={styles.text}>
+            BTech Wala is an independent educational application and is not
+            affiliated with any government body or university.
+          </Text>
+          <Text style={styles.text}>
+            All notes, PYQs, and PDFs belong to their respective owners.
+          </Text>
+          <Text style={styles.text}>
+            If any content violates copyright, please contact us for removal.
+          </Text>
         </View>
-      </View>
-
-      <View style={styles.card}>
-        <Text style={styles.text}>
-          BTech Wala is an independent educational application and is not
-          affiliated with any government body or university.
-        </Text>
-
-        <Text style={styles.text}>
-          All notes, PYQs, and PDFs belong to their respective owners.
-        </Text>
-
-        <Text style={styles.text}>
-          If any content violates copyright, please contact us for removal.
-        </Text>
-      </View>
-    </ScrollView>
+      </ScrollView>
+    </View>
   );
 }
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,

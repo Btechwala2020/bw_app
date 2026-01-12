@@ -10,6 +10,7 @@ import {
 } from "react-native";
 import { useRoute } from "@react-navigation/native";
 import Icon from "react-native-vector-icons/Ionicons";
+import TopNavbarBack from '../../components/navigation/TopNavBarBack';
 
 const BASE_URL =
   "https://pub-8d76bb5c3d9f47529f84f1c651531e3a.r2.dev";
@@ -42,6 +43,7 @@ export default function PyqPdfListScreen() {
   };
 
   const renderItem = ({ item }) => (
+    
     <TouchableOpacity
       activeOpacity={0.9}
       style={styles.card}
@@ -49,6 +51,7 @@ export default function PyqPdfListScreen() {
     >
       {/* LEFT */}
       <View style={styles.left}>
+         <TopNavbarBack title="About Us" />
         <View style={styles.iconWrap}>
           <Icon name="document-text-outline" size={22} color="#ffffff" />
         </View>

@@ -1,15 +1,12 @@
-// src/navigation/drawerRoutes.js
-
 import HomeScreen from "../screens/HomeScreen";
-import PyqSemesterScreen from "../screens/PyqScreen/PyqSemesterScreen";
-import QuantumYearLevelScreen from "../screens/Quantum/QuantumYearLevelScreen";
-import TopicsYearLevelScreen from "../screens/Important Topics/TopicsYearLevelScreen";
-
 import AboutUsScreen from "../screens/TermsCond/AboutUsScreen";
 import PrivacyPolicyScreen from "../screens/TermsCond/PrivacyPolicyScreen";
 import TermsConditionsScreen from "../screens/TermsCond/TermsConditionsScreen";
 import DisclaimerScreen from "../screens/TermsCond/DisclaimerScreen";
 import ContactUsScreen from "../screens/TermsCond/ContactUsScreen";
+import PyqStack from "./PyqStack";
+import ImportantTopicsStack from "./ImportantTopicsStack";
+import QuantumStack from "./QuantumStack";
 
 export const DRAWER_ROUTES = [
   {
@@ -22,30 +19,20 @@ export const DRAWER_ROUTES = [
     name: "PyqSemester",
     label: "Previous Year Papers",
     icon: "document-text-outline",
-    component: PyqSemesterScreen,
-  },
-  {
-    name: "PyqSubjects",
-    label: "PYQ Subjects",
-    icon: "book-outline",
-    component: require('../screens/PyqScreen/PyqSubjectScreen').default,
-    hidden: true,
-  },
-  {
-    name: "PyqPdfList",
-    label: "PYQ PDFs",
-    icon: "document-text-outline",
-    component: require('../screens/PyqScreen/PyqPdfListScreen').default,
-    hidden: true,
+    component: PyqStack,
   },
   {
     name: "TopicsYearLevel",
     label: "Important Topics",
     icon: "bulb-outline",
-    component: TopicsYearLevelScreen,
+    component: ImportantTopicsStack,
   },
-
-  // STATIC / PLAY STORE PAGES
+  {
+    name: "QuantumYearLevel",
+    label: " Latest Quantum",
+    icon: "layers-outline",
+    component: QuantumStack,
+  },
   {
     name: "AboutUs",
     label: "About Us",
