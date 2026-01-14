@@ -1,176 +1,318 @@
-import React from 'react';
+import React, { useRef, useEffect, useState } from "react";
 import {
-    View,
-    Text,
-    StyleSheet,
-    ScrollView,
-} from 'react-native';
-import { COLORS } from '../theme/colors';
-import NoteCard from '../components/cards/NoteCard';
-import NavItem from '../components/navigation/NavItem';
-import { useNavigation } from '@react-navigation/native';
+  View,
+  Text,
+  TouchableOpacity,
+  StyleSheet,
+  ScrollView,
+  Dimensions,
+  Image,
+  FlatList,
+  Platform,
+} from "react-native";
+import { useNavigation } from "@react-navigation/native";
+import Icon from "react-native-vector-icons/Ionicons";
+import TopNavbar from "../components/navigation/TopNavbar";
+import BottomNav from "../components/navigation/BottomNav";
 
-const HomeScreen = () => {
-    let navigation;
-    try {
-        navigation = useNavigation();
-    } catch (e) {
-        navigation = { navigate: () => {}, goBack: () => {} };
-    }
+const { width, height } = Dimensions.get("window");
+const CARD_WIDTH = (width - 80) / 3;
+const SLIDER_HEIGHT = 200;
 
-    return (
-        <View style={styles.container}>
-            <ScrollView showsVerticalScrollIndicator={false}>
+export default function HomeScreen() {
+  const navigation = useNavigation();
+  const flatListRef = useRef(null);
+  const [currentIndex, setCurrentIndex] = useState(0);
 
-                {/* HERO */}
-                <View style={styles.hero}>
-                    <Text style={styles.hello}>Hello, Anubhav 👋</Text>
-                    <Text style={styles.heroTitle}>
-                        1st Year B-Tech – Build{'\n'}Your Strong Foundation
-                    </Text>
-                </View>
+  const banners = [
+    require("../assets/images/banner1.jpg"),
+    require("../assets/images/banner2.jpg"),
+    require("../assets/images/banner3.jpg"),
+  ];
 
-                {/* RECENT NOTES */}
-                <View style={styles.sectionHeader}>
-                    <Text style={styles.sectionTitle}>Recent Notes</Text>
-                    <Text style={styles.viewAll}>View All</Text>
-                </View>
+  // Auto scroll slider
+  useEffect(() => {
+    const interval = setInterval(() => {
+      const nextIndex = (currentIndex + 1) % banners.length;
+      flatListRef.current?.scrollToIndex({ index: nextIndex, animated: true });
+      setCurrentIndex(nextIndex);
+    }, 3000);
+    return () => clearInterval(interval);
+  }, [currentIndex]);
 
-                <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-                    <NoteCard title="Women & Gender Studies" price="₹20" />
-                    <NoteCard title="Unit-5 Introduction" price="₹20" />
-                </ScrollView>
+  const FEATURES = [
+    { id: 1, title: "PYQ", icon: "document-text-outline", onPress: () => navigation.navigate("PyqSemester") },
+    { id: 2, title: "Notes", icon: "book-outline", onPress: () => navigation.navigate("Notes") },
+    { id: 3, title: "Quantum", icon: "bulb-outline", onPress: () => navigation.navigate("QuantumYearLevel") },
+        { id: 4, title: "Imp Topic", icon: "layers-outline", onPress: () => navigation.navigate("TopicsYearLevel") },
+    // { id: 5, title: "Books", icon: "bookmarks-outline", onPress: () => navigation.navigate("Books") },
+    { id: 6, title: "Practical Files", icon: "notifications-outline", onPress: () => navigation.navigate("Updates") },
+    { id: 7, title: "AKTU Result", icon: "help-circle-outline", onPress: () => navigation.navigate("Help") },
+  ];
 
-            </ScrollView>
+  const PYQ_YEARS = [
+    { id: "1", year: "First Year", subtitle: "Sem 1 & 2" },
+    { id: "2", year: "Second Year", subtitle: "Sem 3 & 4" },
+    { id: "3", year: "Third Year", subtitle: "Sem 5 & 6" },
+    { id: "4", year: "Fourth Year", subtitle: "Sem 7 & 8" },
+  ];
 
-            {/* BOTTOM NAV */}
-            <View style={styles.bottomNav}>
-                <NavItem
-                    label="Home"
-                    icon={require('../assets/icons/home.png')}
-                    active
-                />
-                <NavItem
-                    label="Topics"
-                    icon={require('../assets/icons/notes.png')}
-                    onPress={() => {
-                        console.log('TOPICS CLICKED');
-                        navigation.navigate('TopicsYearLevel');
-                    }}
-                />
-                <NavItem
-                    label="Quantum"
-                    icon={require('../assets/icons/pyq.png')}
-                    onPress={() => {
-                        console.log('QUANTUM CLICKED');
-                        navigation.navigate('QuantumYearLevel');
-                    }}
-                />
-                <NavItem
-                    label="PYQ"
-                    icon={require('../assets/icons/pyq.png')}
-                    onPress={() => {
-                        console.log('PYQ CLICKED');
-                        navigation.navigate('PyqSemester');
-                    }}
-                />
+  const NOTES = [
+    { id: "1", title: "First Year", subtitle: "Sem 1 & 2" },
+    { id: "2", title: "Second Year", subtitle: "Sem 3 & 4" },
+    { id: "3", title: "Third Year", subtitle: "Sem 5 & 6" },
+    { id: "4", title: "Fourth Year", subtitle: "Sem 7 & 8" },
+  ];
 
-            </View>
+  const QUANTUM = [
+    { id: "1", title: "First Year", subtitle: "Sem 1 & 2" },
+    { id: "2", title: "Second Year", subtitle: "Sem 3 & 4" },
+    { id: "3", title: "Third Year", subtitle: "Sem 5 & 6" },
+    { id: "4", title: "Fourth Year", subtitle: "Sem 7 & 8" },
+  ];
+
+  return (
+    <View style={styles.root}>
+      <TopNavbar title="Home" showBack={false} />
+
+      <ScrollView contentContainerStyle={styles.container}>
+        {/* ─── SLIDER ───────────────────────── */}
+        <FlatList
+          ref={flatListRef}
+          data={banners}
+          horizontal
+          pagingEnabled
+          showsHorizontalScrollIndicator={false}
+          keyExtractor={(_, i) => i.toString()}
+          renderItem={({ item }) => <Image source={item} style={styles.bannerImage} />}
+        />
+
+        {/* Dots */}
+        <View style={styles.dots}>
+          {banners.map((_, i) => (
+            <View key={i} style={[styles.dot, { opacity: i === currentIndex ? 1 : 0.3 }]} />
+          ))}
         </View>
-    );
-};
 
-export default HomeScreen;
+        {/* ─── TEXT ───────────────────────── */}
+        <Text style={styles.heading}>Welcome 👋</Text>
+        <Text style={styles.subHeading}>
+          Explore PYQs, Notes & Quantum Materials
+        </Text>
 
+        {/* ─── QUICK ACCESS ───────────────────────── */}
+        <View style={styles.grid}>
+          {FEATURES.map((item) => (
+            <TouchableOpacity
+              key={item.id}
+              activeOpacity={0.9}
+              style={styles.featureCard}
+              onPress={item.onPress}
+            >
+              <View style={styles.featureIconWrap}>
+                <Icon name={item.icon} size={26} color="#fff" />
+              </View>
+              <Text style={styles.featureTitle}>{item.title}</Text>
+            </TouchableOpacity>
+          ))}
+        </View>
 
+        {/* ─── PYQ SECTION ───────────────────────── */}
+        <View style={styles.sectionHeader}>
+          <Text style={styles.sectionTitle}>Previous Year Questions</Text>
+          <TouchableOpacity onPress={() => navigation.navigate("PyqSemester")}>
+            <Text style={[styles.viewAll, { color: "#fff" }]}>View All</Text>
+          </TouchableOpacity>
+        </View>
 
+        <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ paddingHorizontal: 16 }}>
+          {PYQ_YEARS.map((item) => (
+            <TouchableOpacity
+              key={item.id}
+              style={[styles.scrollCard, { borderColor: "#facc15" }]}
+              activeOpacity={0.9}
+              onPress={() => navigation.navigate("PyqSemester")}
+            >
+              <Icon name="school-outline" size={24} color="#facc15" style={{ marginBottom: 10 }} />
+              <Text style={styles.scrollTitle}>{item.year}</Text>
+              <Text style={styles.scrollSubtitle}>{item.subtitle}</Text>
+            </TouchableOpacity>
+          ))}
+        </ScrollView>
+
+        {/* ─── NOTES SECTION ───────────────────────── */}
+        <View style={styles.sectionHeader}>
+          <Text style={styles.sectionTitle}>Previous Year paper</Text>
+          <TouchableOpacity onPress={() => navigation.navigate("TopicsYearLevel")}>
+            <Text style={[styles.viewAll, { color: "#fff" }]}>View All</Text>
+          </TouchableOpacity>
+        </View>
+
+        <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ paddingHorizontal: 16 }}>
+          {NOTES.map((item) => (
+            <TouchableOpacity
+              key={item.id}
+              style={[styles.scrollCard, { borderColor: "#3b82f6" }]}
+              activeOpacity={0.9}
+              onPress={() => navigation.navigate("TopicsYearLevel")}
+            >
+              <Icon name="book-outline" size={24} color="#3b82f6" style={{ marginBottom: 10 }} />
+              <Text style={styles.scrollTitle}>{item.title}</Text>
+              <Text style={styles.scrollSubtitle}>{item.subtitle}</Text>
+            </TouchableOpacity>
+          ))}
+        </ScrollView>
+
+        {/* ─── QUANTUM SECTION ───────────────────────── */}
+        <View style={styles.sectionHeader}>
+          <Text style={styles.sectionTitle}>Latest Quantum</Text>
+          <TouchableOpacity onPress={() => navigation.navigate("Quantum")}>
+            <Text style={[styles.viewAll, { color: "#fff" }]}>View All</Text>
+          </TouchableOpacity>
+        </View>
+
+        <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ paddingHorizontal: 16 }}>
+          {QUANTUM.map((item) => (
+            <TouchableOpacity
+              key={item.id}
+              style={[styles.scrollCard, { borderColor: "#10b981" }]}
+              activeOpacity={0.9}
+              onPress={() => navigation.navigate("QuantumYearLevel")}
+            >
+              <Icon name="bulb-outline" size={24} color="#10b981" style={{ marginBottom: 10 }} />
+              <Text style={styles.scrollTitle}>{item.title}</Text>
+              <Text style={styles.scrollSubtitle}>{item.subtitle}</Text>
+            </TouchableOpacity>
+          ))}
+        </ScrollView>
+      </ScrollView>
+
+      <BottomNav
+        activeIndex={0}
+        items={[
+          {
+            label: "Home",
+            icon: "https://cdn-icons-png.flaticon.com/512/1946/1946488.png",
+            onPress: () => navigation.navigate("Home"),
+          },
+          {
+            label: "Notes",
+            icon: "https://cdn-icons-png.flaticon.com/512/768/768818.png",
+            onPress: () => navigation.navigate("Notes"),
+          },
+          {
+            label: "Quantum",
+            icon: "https://cdn-icons-png.flaticon.com/512/865/865169.png",
+            onPress: () => navigation.navigate("QuantumYearLevel"),
+          },
+          {
+            label: "Imp Topics",
+            icon: "https://cdn-icons-png.flaticon.com/512/16598/16598001.png",
+            onPress: () => navigation.navigate("TopicsYearLevel"),
+          },
+          {
+            label: "PYQ",
+            icon: "https://cdn-icons-png.flaticon.com/512/9479/9479324.png",
+            onPress: () => navigation.navigate("PyqSemester"),
+          },
+        ]}
+      />
+
+    </View>
+  );
+}
+
+//
+// ─── STYLES ─────────────────────────────
+//
 const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        backgroundColor:"#0B0B0F",
-    },
+  root: { flex: 1, backgroundColor: "#07070a" },
 
-    hero: {
-        backgroundColor: COLORS.glass,
-        margin: 16,
-        borderRadius: 22,
-        padding: 20,
-        borderWidth: 1,
-        borderColor: COLORS.border,
-    },
+  container: {
+    paddingBottom: 150,
+    paddingHorizontal: 0,
+    flexGrow: 1, // allows ScrollView to expand naturally
+  },
 
-    hello: {
-        color: COLORS.subText,
-        fontSize: 14,
-    },
+  bannerImage: {
+    width: width - 32,
+    height: SLIDER_HEIGHT,
+    borderRadius: 18,
+    marginHorizontal: 16,
+  },
+  dots: { flexDirection: "row", justifyContent: "center", marginTop: 12 },
+  dot: { width: 8, height: 8, borderRadius: 4, backgroundColor: "#fff", marginHorizontal: 4 },
 
-    heroTitle: {
-        color: COLORS.text,
-        fontSize: 22,
-        fontWeight: 'bold',
-        marginTop: 8,
-    },
+  heading: { color: "#fff", fontSize: 26, fontWeight: "800", marginHorizontal: 20, marginTop: 24, marginBottom: 8 },
+  subHeading: { color: "#9ca3af", fontSize: 14, marginHorizontal: 20, marginBottom: 28 },
 
-    sectionHeader: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        paddingHorizontal: 16,
-        marginTop: 20,
-    },
+  // ─── FEATURE CARDS ─────────────────────────
+  grid: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    justifyContent: "space-between",
+    paddingHorizontal: 20,
+    marginBottom: 32,
+  },
+  featureCard: {
+    backgroundColor: "#141417",
+    borderRadius: 22,
+    paddingVertical: 12,
+    paddingHorizontal: 10,
+    marginBottom: 20,
+    alignItems: "center",
+    width: CARD_WIDTH,
+    borderWidth: 1.5,
+    borderColor: "rgb(255, 255, 255)",
+    ...Platform.select({
+      ios: {
+        shadowColor: "#fff",
+        shadowOffset: { width: 0, height: 0 },
+        shadowOpacity: 0.15,
+        shadowRadius: 6,
+      },
+      android: { elevation: 5 },
+    }),
+  },
+  featureIconWrap: {
+    width: 60,
+    height: 60,
+    borderRadius: 18,
+    borderWidth: 2,
+    borderColor: "rgba(255,255,255,0.4)",
+    alignItems: "center",
+    justifyContent: "center",
+    // marginBottom: 12,
+    backgroundColor: "rgba(255,255,255,0.05)",
+  },
+  featureTitle: { color: "#fff", fontSize: 16, fontWeight: "700", textAlign: "center", letterSpacing: 0.3 },
 
-    sectionTitle: {
-        color: COLORS.text,
-        fontSize: 18,
-        fontWeight: '600',
-    },
+  // ─── SECTION HEADERS ─────────────────────────
+  sectionHeader: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    paddingHorizontal: 20,
+    marginTop: 36,
+    marginBottom: 14,
+  },
+  sectionTitle: { fontSize: 19, fontWeight: "700", color: "#fff" },
+  viewAll: { fontSize: 14, fontWeight: "500" },
 
-    viewAll: {
-        color: COLORS.accent,
-    },
-
-    card: {
-        width: 180,
-        backgroundColor: COLORS.glass,
-        borderRadius: 18,
-        marginLeft: 16,
-        padding: 12,
-        borderWidth: 1,
-        borderColor: COLORS.border,
-    },
-
-    cardImg: {
-        width: '100%',
-        height: 100,
-        borderRadius: 14,
-        marginBottom: 10,
-    },
-
-    cardTitle: {
-        color: COLORS.text,
-        fontSize: 14,
-    },
-
-    price: {
-        color: '#00ff99',
-        marginTop: 6,
-        fontWeight: '600',
-    },
-
-    bottomNav: {
-        flexDirection: 'row',
-        backgroundColor: COLORS.glass,
-        paddingVertical: 10,
-        borderTopWidth: 1,
-        borderColor: COLORS.border,
-    },
-
-
-    navItem: {
-        alignItems: 'center',
-    },
-
-    navText: {
-        color: COLORS.subText,
-        fontSize: 12,
-    },
+  // ─── SCROLL CARDS ─────────────────────────
+  scrollCard: {
+    backgroundColor: "#141417",
+    borderRadius: 22,
+    paddingVertical: 5,
+    marginTop: 20,
+    paddingHorizontal: 8,
+    marginRight: 16,
+    borderWidth: 1.5,
+    width: 140,
+    height: 140, // increased card height
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  scrollTitle: { color: "#fff", fontSize: 17, fontWeight: "700" },
+  scrollSubtitle: { color: "#d1d5db", fontSize: 14, marginTop: 4 },
 });

@@ -1,18 +1,16 @@
-/**
- * Sample React Native App
- * https://github.com/facebook/react-native
- *
- * @format
- */
-
-import React from 'react';
+import React, { useState } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
-import AppNavigator from './src/navigation/AppNavigator2';
+import DrawerNavigatorStyled from './src/navigation/DrawerNavigatorStyled';
+import SplashScreen from './src/screens/SplashScreen';
 
 export default function App() {
-  return (
+  const [showSplash, setShowSplash] = useState(true);
+
+  return showSplash ? (
+    <SplashScreen onFinish={() => setShowSplash(false)} />
+  ) : (
     <NavigationContainer>
-      <AppNavigator />
+      <DrawerNavigatorStyled />
     </NavigationContainer>
   );
 }

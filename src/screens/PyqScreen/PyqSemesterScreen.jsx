@@ -1,4 +1,4 @@
-import React from 'react';
+import React from "react";
 import {
   View,
   Text,
@@ -6,151 +6,172 @@ import {
   StyleSheet,
   ScrollView,
   Platform,
-} from 'react-native';
-import { useNavigation } from '@react-navigation/native';
-
+} from "react-native";
+import { useNavigation } from "@react-navigation/native";
+import Icon from "react-native-vector-icons/Ionicons";
+import TopNavbarBack from '../../components/navigation/TopNavBarBack';
 const YEAR_LEVELS = [
-  { id: '1', level: '1st Year', subtitle: 'Semesters 1 & 2', color: '#3b82f6', sems: ['sem1', 'sem2'] },
-  { id: '2', level: '2nd Year', subtitle: 'Semesters 3 & 4', color: '#8b5cf6', sems: ['sem3', 'sem4'] },
-  { id: '3', level: '3rd Year', subtitle: 'Semesters 5 & 6', color: '#ec4899', sems: ['sem5', 'sem6'] },
-  { id: '4', level: '4th Year', subtitle: 'Semesters 7 & 8', color: '#f59e0b', sems: ['sem7', 'sem8'] },
+  {
+    id: "1",
+    level: "1st Year",
+    subtitle: "Semesters 1 & 2",
+    sems: ["sem1", "sem2"],
+  },
+  {
+    id: "2",
+    level: "2nd Year",
+    subtitle: "Semesters 3 & 4",
+    sems: ["sem3", "sem4"],
+  },
+  {
+    id: "3",
+    level: "3rd Year",
+    subtitle: "Semesters 5 & 6",
+    sems: ["sem5", "sem6"],
+  },
+  {
+    id: "4",
+    level: "4th Year",
+    subtitle: "Semesters 7 & 8",
+    sems: ["sem7", "sem8"],
+  },
 ];
 
-const PyqSemesterScreen = () => {
+export default function PyqSemesterScreen() {
   const navigation = useNavigation();
 
   return (
     <View style={styles.root}>
-      <ScrollView contentContainerStyle={styles.container} showsVerticalScrollIndicator={false}>
-        <View style={styles.headerWrap}>
-          <Text style={styles.title}>Select Year Level</Text>
-          <Text style={styles.subtitle}>Find PYQs for your year</Text>
-        </View>
+       <TopNavbarBack title="PYQ" />
+      <ScrollView
+        contentContainerStyle={styles.container}
+        showsVerticalScrollIndicator={false}
+      >
+        {/* HEADER */}
+        <Text style={styles.heading}>Select Academic Year</Text>
+        <Text style={styles.subHeading}>
+          Find Previous Year Question Papers
+        </Text>
 
-        <View style={styles.grid}>
-          {YEAR_LEVELS.map((item) => (
-            <TouchableOpacity
-              key={item.id}
-              activeOpacity={0.9}
-              style={[styles.card, { borderLeftColor: item.color }]}
-              onPress={() =>
-                navigation.navigate('PyqSubjects', {
-                  yearLevel: item.level,
-                  semesters: item.sems,
-                })
-              }
-            >
-              <View style={styles.cardInner}>
-                <View style={[styles.iconCircle, { backgroundColor: item.color + '22' }]}>
-                  <View style={[styles.iconDot, { backgroundColor: item.color }]} />
-                </View>
-
-                <View style={styles.textWrap}>
-                  <Text style={styles.cardTitle}>{item.level}</Text>
-                  <Text style={styles.cardSub}>{item.subtitle}</Text>
-                </View>
+        {/* CARDS */}
+        {YEAR_LEVELS.map((item) => (
+          <TouchableOpacity
+            key={item.id}
+            activeOpacity={0.9}
+            style={styles.card}
+            onPress={() =>
+              navigation.navigate("PyqSubjects", {
+                yearLevel: item.level,
+                semesters: item.sems,
+              })
+            }
+          >
+            {/* LEFT */}
+            <View style={styles.left}>
+              <View style={styles.iconWrap}>
+                <Icon name="school-outline" size={24} color="#ffffff" />
               </View>
 
-              <View style={[styles.chev, { backgroundColor: item.color + '1a' }]}> 
-                <Text style={[styles.chevText, { color: item.color }]}>›</Text>
+              <View>
+                <Text style={styles.title}>{item.level}</Text>
+                <Text style={styles.subtitle}>{item.subtitle}</Text>
               </View>
-            </TouchableOpacity>
-          ))}
-        </View>
+            </View>
+
+            {/* RIGHT */}
+            <Text style={styles.chev}>›</Text>
+          </TouchableOpacity>
+        ))}
       </ScrollView>
     </View>
   );
-};
-
-export default PyqSemesterScreen;
-
+}
 const styles = StyleSheet.create({
   root: {
     flex: 1,
-    backgroundColor: '#07070a',
+    backgroundColor: "#07070a",
   },
+
   container: {
-    padding: 20,
-    paddingTop: 28,
+    paddingVertical: 24,
   },
-  headerWrap: {
-    marginBottom: 18,
+
+  heading: {
+    color: "#ffffff",
+    fontSize: 24,
+    fontWeight: "800",
+    marginHorizontal: 20,
+    marginBottom: 6,
   },
-  title: {
-    color: '#fff',
-    fontSize: 26,
-    fontWeight: '800',
-  },
-  subtitle: {
-    color: '#9ca3af',
-    marginTop: 6,
+
+  subHeading: {
+    color: "#9ca3af",
     fontSize: 13,
+    marginHorizontal: 20,
+    marginBottom: 20,
   },
-  grid: {
-    marginTop: 6,
-  },
+
+  /* CARD */
   card: {
-    backgroundColor: '#0f0f12',
-    borderRadius: 14,
-    padding: 16,
-    marginBottom: 14,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    borderLeftWidth: 4,
+    backgroundColor: "#141417",
+    borderRadius: 22,
+    paddingVertical: 22,
+    paddingHorizontal: 20,
+    marginHorizontal: 16,
+    marginBottom: 16,
+
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+
+    borderWidth: 1,
+    borderColor: "rgba(255,255,255,0.15)",
+
     ...Platform.select({
       ios: {
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 6 },
-        shadowOpacity: 0.18,
-        shadowRadius: 12,
+        shadowColor: "#000",
+        shadowOffset: { width: 0, height: 10 },
+        shadowOpacity: 0.35,
+        shadowRadius: 18,
       },
       android: {
-        elevation: 6,
+        elevation: 10,
       },
     }),
   },
-  cardInner: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    flex: 1,
+
+  left: {
+    flexDirection: "row",
+    alignItems: "center",
   },
-  iconCircle: {
-    width: 56,
-    height: 56,
-    borderRadius: 14,
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginRight: 12,
+
+  iconWrap: {
+    width: 48,
+    height: 48,
+    borderRadius: 16,
+    borderWidth: 2,
+    borderColor: "#ffffff",
+    alignItems: "center",
+    justifyContent: "center",
+    marginRight: 16,
   },
-  iconDot: {
-    width: 16,
-    height: 16,
-    borderRadius: 8,
-  },
-  textWrap: {
-    flex: 1,
-  },
-  cardTitle: {
-    color: '#fff',
+
+  title: {
+    color: "#ffffff",
     fontSize: 18,
-    fontWeight: '700',
+    fontWeight: "700",
+    letterSpacing: 0.4,
   },
-  cardSub: {
-    color: '#9ca3af',
+
+  subtitle: {
+    color: "#9ca3af",
+    fontSize: 13,
     marginTop: 4,
-    fontSize: 12,
   },
+
   chev: {
-    width: 44,
-    height: 44,
-    borderRadius: 12,
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginLeft: 12,
-  },
-  chevText: {
-    fontSize: 20,
-    fontWeight: '800',
+    color: "#ffffff",
+    fontSize: 26,
+    fontWeight: "800",
   },
 });

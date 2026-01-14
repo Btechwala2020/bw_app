@@ -1,261 +1,181 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState } from "react";
 import {
   View,
   Text,
   FlatList,
   TouchableOpacity,
+  ActivityIndicator,
   StyleSheet,
   Linking,
-  ActivityIndicator,
-} from 'react-native';
-import { useRoute } from '@react-navigation/native';
+  Platform,
+} from "react-native";
+import { useRoute } from "@react-navigation/native";
+import Icon from "react-native-vector-icons/Ionicons";
+import TopNavbarBack from "../../components/navigation/TopNavBarBack";
 
-const BASE_URL = 'https://pub-8d76bb5c3d9f47529f84f1c651531e3a.r2.dev/quantum';
+const BASE_URL =
+  "https://pub-96d515e7e6b74514adfe46d7eb1f7fbc.r2.dev";
 
-const YEAR_MAPPING = {
-  '1st Year': ['sem1', 'sem2'],
-  '2nd Year': ['sem3', 'sem4'],
-  '3rd Year': ['sem5', 'sem6'],
-  '4th Year': ['sem7', 'sem8'],
-};
-
-const SUBJECTS_BY_SEM = {
-  sem1: ['chemistry', 'maths', 'physics', 'maths2', 'softskill', 'environment', 'pps', 'electrical', 'mechanical', 'electronics'],
-  sem2: ['chemistry', 'maths1', 'physics', 'maths2', 'softskill', 'environment', 'pps', 'electrical', 'mechanical', 'electronics'],
-  sem3: ['dsa', 'digital', 'dstl', 'cyber', 'python', 'uhv', 'tc', 'coa', 'maths4'],
-  sem4: ['os', 'maths4', 'digital', 'oop', 'tc', 'coa', 'micro', 'uhv', 'tafl', 'cyber', 'python'],
-  sem5: ['dbms', 'daa', 'wt', 'coi', 'eitk', 'da', 'cg', 'oosd', 'ml', 'sc', 'ip', 'dwdm'],
-  sem6: ['se', 'cd', 'cn', 'coi', 'eitk', 'bd', 'arvr', 'bad', 'dc', 'analytics', 'comgraphics', 'oosdc++'],
-  sem7: ['ai', 'dl', 'iot', 'vhs', 'rer', 'pme', 'itgs', 'crypto', 'dwdm', 'cloud', 'rdap', 'dda', 'nlp'],
-  sem8: ['ai', 'dl', 'iot', 'vhs', 'rer', 'pme', 'itgs', 'crypto', 'dwdm', 'cloud', 'rdap', 'dda', 'nlp'],
-};
-
-const QuantumPdfListScreen = () => {
+export default function QuantumPdfListScreen() {
   const route = useRoute();
-  const { yearLevel } = route.params;
+  const { semesterKeys = [], subjectName = "Quantum" } =
+    route.params || {};
 
-  const [pdfs, setPdfs] = useState([]);
+  const [files, setFiles] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  const COLORS = ['#3b82f6', '#8b5cf6', '#ec4899', '#f59e0b', '#10b981', '#ef4444'];
-  const getColorForKey = (key) => {
-    if (!key) return COLORS[0];
-    const sum = key.split('').reduce((s, c) => s + c.charCodeAt(0), 0);
-    return COLORS[sum % COLORS.length];
-  };
-
   useEffect(() => {
-    const fetchAllPapers = async () => {
+    const fetchFiles = async () => {
       try {
-        const semesters = YEAR_MAPPING[yearLevel] || [];
-        let allPapers = [];
+        let all = [];
 
-        // Fetch papers from all semesters for this year level
-        for (const semesterKey of semesters) {
-          const subjects = SUBJECTS_BY_SEM[semesterKey] || [];
+        for (const sem of semesterKeys) {
+          const url = `${BASE_URL}/${sem}/quantum/index.json`;
+          const res = await fetch(url);
 
-          for (const subjectKey of subjects) {
-            try {
-              const url = `${BASE_URL}/${semesterKey}/${subjectKey}/index.json`;
-              const response = await fetch(url);
-              
-              if (response.ok) {
-                const data = await response.json();
-                // Add semester and subject info to each paper
-                const papersWithMetadata = data.map((paper) => ({
-                  ...paper,
-                  semesterKey,
-                  subjectKey,
-                }));
-                allPapers = [...allPapers, ...papersWithMetadata];
-              }
-            } catch (err) {
-              console.log(`Error fetching ${semesterKey}/${subjectKey}:`, err);
-            }
+          if (res.ok) {
+            const data = await res.json();
+            all.push(...data.map(f => ({ ...f, sem })));
           }
         }
 
-        // Sort by year (latest first)
-        const sortedPapers = allPapers.sort((a, b) => {
-          const yearA = parseInt(a.year?.split('-')[0] || 0);
-          const yearB = parseInt(b.year?.split('-')[0] || 0);
-          return yearB - yearA;
-        });
-
-        setPdfs(sortedPapers);
-        setLoading(false);
+        setFiles(all);
       } catch (err) {
-        console.log('Error fetching papers:', err);
+        console.log("Quantum fetch error", err);
+      } finally {
         setLoading(false);
       }
     };
 
-    fetchAllPapers();
-  }, [yearLevel]);
+    fetchFiles();
+  }, [semesterKeys]);
 
-  const openPdf = (semesterKey, subjectKey, file) => {
-    const pdfUrl = `${BASE_URL}/${semesterKey}/${subjectKey}/${file}`;
-    Linking.openURL(pdfUrl);
-  };
-
-  const renderItem = ({ item }) => {
-    const color = getColorForKey(item.subjectKey || item.semesterKey);
-    return (
-      <TouchableOpacity
-        style={[styles.card, { borderLeftColor: color }]}
-        onPress={() => openPdf(item.semesterKey, item.subjectKey, item.file)}
-      >
-        <View style={styles.cardInner}>
-          <View style={[styles.iconCircle, { backgroundColor: color + '22' }]}>
-            <Text style={[styles.iconDot, { color }]}>{(item.subjectKey || '').charAt(0).toUpperCase()}</Text>
-          </View>
-
-          <View style={styles.textWrap}>
-            <Text style={styles.pdfName}>{item.name}</Text>
-            <Text style={styles.semesterText}>{item.semesterKey.toUpperCase()} • {item.subjectKey}</Text>
-            <Text style={styles.yearText}>Year: {item.year || 'N/A'}</Text>
-          </View>
-        </View>
-
-        <View style={[styles.chev, { backgroundColor: color + '1a' }]}> 
-          <Text style={[styles.chevText, { color }]}>›</Text>
-        </View>
-      </TouchableOpacity>
-    );
+  const openPdf = (sem, file) => {
+    const url = `${BASE_URL}/${sem}/quantum/${file}`;
+    Linking.openURL(url);
   };
 
   if (loading) {
     return (
-      <View style={[styles.container, styles.centerContainer]}>
+      <View style={[styles.container, styles.center]}>
         <ActivityIndicator size="large" color="#22c55e" />
-        <Text style={styles.loadingText}>Loading Quantum Papers...</Text>
+        <Text style={styles.loadingText}>
+          Loading quantum PDFs…
+        </Text>
       </View>
     );
   }
 
-  if (pdfs.length === 0) {
+  if (!files.length) {
     return (
-      <View style={[styles.container, styles.centerContainer]}>
-        <Text style={styles.emptyText}>No papers available for {yearLevel}</Text>
+      <View style={[styles.container, styles.center]}>
+        <Text style={styles.emptyText}>
+          No quantum files found
+        </Text>
       </View>
     );
   }
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>{yearLevel} Quantum Papers</Text>
-      <Text style={styles.subtitle}>{pdfs.length} papers found</Text>
+      <TopNavbarBack title={subjectName} />
 
       <FlatList
-        data={pdfs}
-        keyExtractor={(item, index) => index.toString()}
-        renderItem={renderItem}
+        data={files}
+        keyExtractor={(_, i) => i.toString()}
         showsVerticalScrollIndicator={false}
+        renderItem={({ item }) => (
+          <TouchableOpacity
+            style={styles.card}
+            activeOpacity={0.85}
+            onPress={() => openPdf(item.sem, item.file)}
+          >
+            <View style={styles.left}>
+              <View style={styles.iconWrap}>
+                <Icon name="document-outline" size={22} color="#ffffff" />
+              </View>
+
+              <View style={{ flex: 1 }}>
+                <Text style={styles.fileName} numberOfLines={2}>
+                  {item.name}
+                </Text>
+                <Text style={styles.meta}>
+                  Tap to open PDF
+                </Text>
+              </View>
+            </View>
+
+            <Icon name="chevron-forward" size={20} color="#9ca3af" />
+          </TouchableOpacity>
+        )}
       />
     </View>
   );
-};
-
-export default QuantumPdfListScreen;
+}
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#0b0b0b',
+    backgroundColor: "#07070a",
     padding: 16,
   },
-  centerContainer: {
-    justifyContent: 'center',
-    alignItems: 'center',
+  center: {
+    justifyContent: "center",
+    alignItems: "center",
   },
-  title: {
-    color: '#fff',
-    fontSize: 22,
-    fontWeight: '600',
-    marginBottom: 4,
+  loadingText: {
+    color: "#9ca3af",
+    marginTop: 10,
   },
-  subtitle: {
-    color: '#94a3b8',
-    fontSize: 14,
-    marginBottom: 20,
+  emptyText: {
+    color: "#9ca3af",
+    fontSize: 15,
   },
   card: {
-    backgroundColor: '#0f0f12',
-    borderRadius: 14,
-    padding: 16,
+    backgroundColor: "#141417",
+    borderRadius: 20,
+    paddingVertical: 16,
+    paddingHorizontal: 16,
     marginBottom: 14,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    borderLeftWidth: 4,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    borderWidth: 1,
+    borderColor: "rgba(255,255,255,0.12)",
     ...Platform.select({
       ios: {
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 6 },
-        shadowOpacity: 0.18,
-        shadowRadius: 12,
+        shadowColor: "#000",
+        shadowOffset: { width: 0, height: 8 },
+        shadowOpacity: 0.25,
+        shadowRadius: 14,
       },
       android: {
         elevation: 6,
       },
     }),
   },
-  cardInner: {
-    flexDirection: 'row',
-    alignItems: 'center',
+  left: {
+    flexDirection: "row",
+    alignItems: "center",
     flex: 1,
   },
-  iconCircle: {
-    width: 56,
-    height: 56,
-    borderRadius: 14,
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginRight: 12,
-  },
-  iconDot: {
-    fontSize: 20,
-    fontWeight: '800',
-  },
-  textWrap: {
-    flex: 1,
-  },
-  pdfName: {
-    color: '#fff',
-    fontSize: 16,
-    fontWeight: '700',
-    marginBottom: 6,
-  },
-  semesterText: {
-    color: '#22c55e',
-    fontSize: 11,
-    fontWeight: '600',
-    marginBottom: 4,
-  },
-  yearText: {
-    color: '#94a3b8',
-    fontSize: 12,
-  },
-  chev: {
+  iconWrap: {
     width: 44,
     height: 44,
-    borderRadius: 12,
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginLeft: 12,
+    borderRadius: 14,
+    backgroundColor: "#1c1c21",
+    alignItems: "center",
+    justifyContent: "center",
+    marginRight: 14,
   },
-  chevText: {
-    fontSize: 20,
-    fontWeight: '800',
+  fileName: {
+    color: "#ffffff",
+    fontSize: 15,
+    fontWeight: "600",
+    marginBottom: 4,
   },
-  loadingText: {
-    color: '#fff',
-    fontSize: 16,
-    marginTop: 12,
-  },
-  emptyText: {
-    color: '#94a3b8',
-    fontSize: 16,
-    textAlign: 'center',
+  meta: {
+    color: "#9ca3af",
+    fontSize: 12,
   },
 });
