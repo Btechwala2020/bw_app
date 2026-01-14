@@ -1,7 +1,7 @@
 import React from "react";
 import { View, Text, TouchableOpacity, StyleSheet, ScrollView } from "react-native";
 import { useNavigation } from "@react-navigation/native";
-import TopNavbar from '../../components/navigation/TopNavbar';
+import TopNavbarBack from '../../components/navigation/TopNavbarBack';
 
 const YEAR_LEVELS = [
   { id: "1", level: "1st Year", subtitle: "Semesters 1 & 2" },
@@ -15,7 +15,7 @@ export default function PracticalYearSelectionScreen() {
 
   return (
     <View style={styles.root}>
-      <TopNavbar title="Practical Files" showBack={false} />
+       <TopNavbarBack title="Practical Files" />
       <ScrollView contentContainerStyle={styles.container} showsVerticalScrollIndicator={false}>
         <Text style={styles.heading}>Select Academic Year</Text>
         <Text style={styles.subHeading}>Find Practical Files by your Academic Year</Text>
