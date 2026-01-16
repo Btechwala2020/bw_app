@@ -1,8 +1,8 @@
 import React from "react";
-import { View, Text, StyleSheet } from "react-native";
+import { View, Text, StyleSheet, Platform } from "react-native";
 import DrawerToggle from "../DrawerToggle";
 
-export default function TopNavbar({ title, showBack = false }) {
+export default function TopNavbar({ title }) {
   // Format title: camelCase / snake_case → Proper Title
   const formatTitle = (str) => {
     if (!str) return "";
@@ -12,7 +12,8 @@ export default function TopNavbar({ title, showBack = false }) {
       .trim()
       .split(" ")
       .map(
-        (word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()
+        (word) =>
+          word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()
       )
       .join(" ");
   };
@@ -20,65 +21,51 @@ export default function TopNavbar({ title, showBack = false }) {
   const displayTitle = formatTitle(title);
 
   return (
-    <View style={styles.wrappere}>
-      <View style={styles.navbare}>
-        {/* LEFT (Drawer/Menu) */}
-        <DrawerToggle showBack={true} style={styles.leftButtone} />
+    <View style={styles.wrapper}>
+      <View style={styles.navbar}>
+        {/* LEFT (Back / Drawer) */}
+        <View style={styles.side}>
+          <DrawerToggle showBack />
+        </View>
 
         {/* CENTER TITLE */}
-        <Text style={styles.titlee} numberOfLines={1}>
+        <Text style={styles.title} numberOfLines={1}>
           {displayTitle}
         </Text>
 
-        {/* RIGHT (Back Button) */}
-         <View style={styles.rightSpacer} />
-        
+        {/* RIGHT SPACER (balance center title) */}
+        <View style={styles.side} />
       </View>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  wrappere: {
-    backgroundColor: "#0B0B0F",
+  wrapper: {
+    backgroundColor: "#0B0B10",
     borderBottomWidth: 1,
-    borderBottomColor: "rgba(255,255,255,0.06)",
+    borderBottomColor: "rgba(255,255,255,0.08)",
   },
 
-  navbare: {
-    height: 60,
+  navbar: {
+    height: 64,
     flexDirection: "row",
     alignItems: "center",
-    
+    paddingHorizontal: 8,
   },
 
-  leftButtone: {
-    width: 62,
-    height: 62,
-    borderRadius: 102,
-    justifyContent: "center",
+  side: {
+    width: 56,
     alignItems: "center",
+    justifyContent: "center",
   },
 
-  titlee: {
+  title: {
     flex: 1,
-    // textAlign: "center",
-    color: "#E5E7EB",
-    fontSize: 25,
-    fontWeight: "600",
-    // marginHorizontal: 68,
-    letterSpacing: 0.4,
-    textAlign:"center",
-   
-  },
-  rightSpacer: {
-    width: 72,
-  },
-  rightButtone: {
-    width: 52,
-    height: 52,
-    borderRadius: 12,
-    justifyContent: "center",
-    alignItems: "center",
+    textAlign: "center",
+    color: "#F9FAFB",
+    fontSize: 20,
+    fontWeight: "700",
+    letterSpacing: 0.3,
   },
 });

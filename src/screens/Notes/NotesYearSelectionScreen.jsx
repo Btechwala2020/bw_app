@@ -1,7 +1,7 @@
 import React from "react";
 import { View, Text, TouchableOpacity, StyleSheet, ScrollView } from "react-native";
 import { useNavigation } from "@react-navigation/native";
-import TopNavbarBack from '../../components/navigation/TopNavbarBack';
+import TopNavbarBack from '../../components/navigation/TopNavBarBack.jsx';
 
 const YEAR_LEVELS = [
   { id: "1", level: "1st Year", subtitle: "Semesters 1 & 2" },

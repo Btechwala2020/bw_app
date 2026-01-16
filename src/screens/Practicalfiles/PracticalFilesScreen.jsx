@@ -1,78 +1,116 @@
 import React, { useEffect, useState } from "react";
-import { View, Text, FlatList, TouchableOpacity, ActivityIndicator, StyleSheet, Platform, Modal } from "react-native";
+import {
+  View,
+  Text,
+  FlatList,
+  TouchableOpacity,
+  ActivityIndicator,
+  StyleSheet,
+  Platform,
+  Alert,
+} from "react-native";
 import { useRoute, useNavigation } from "@react-navigation/native";
 import Icon from "react-native-vector-icons/Ionicons";
+import RNFS from "react-native-fs";
 import TopNavbarBack from "../../components/navigation/TopNavBarBack";
-import RNFS from 'react-native-fs';
 
-const BASE_URL = "https://pub-96d515e7e6b74514adfe46d7eb1f7fbc.r2.dev";
+const BASE_URL =
+  "https://pub-96d515e7e6b74514adfe46d7eb1f7fbc.r2.dev";
 
-const PracticalFilesScreen = () => {
+export default function PracticalFilesScreen() {
   const route = useRoute();
-  const { yearLevel, subjectName } = route.params || {};
   const navigation = useNavigation();
+  const { yearLevel, subjectName } = route.params || {};
 
   const [files, setFiles] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [downloading, setDownloading] = useState(false);
-  const [downloadProgress, setDownloadProgress] = useState(0);
+  const [progressMap, setProgressMap] = useState({});
 
+  /* ================= FETCH PRACTICAL FILES ================= */
   useEffect(() => {
     const fetchFiles = async () => {
       try {
-        setLoading(true);
-        const url = `${BASE_URL}/practicals/${yearLevel}/index.json`;
-        const res = await fetch(url);
+        const res = await fetch(
+          `${BASE_URL}/practicals/${yearLevel}/index.json`
+        );
+
         if (res.ok) {
           const data = await res.json();
-          setFiles(data);
+          setFiles(data.filter(i => i.url));
         } else {
           setFiles([]);
         }
-      } catch (err) {
-        setFiles([]);
+      } catch (e) {
+        console.log("Practical fetch error", e);
+        Alert.alert("Error", "Unable to load practical files");
       } finally {
         setLoading(false);
       }
     };
+
     fetchFiles();
   }, [yearLevel]);
 
-  const downloadAndOpenPdf = async (url, name) => {
+  /* ================= OPEN / DOWNLOAD PDF ================= */
+  const handlePdfPress = async (item) => {
+    const pdfUrl = item.url;
+    const fileName = pdfUrl.split("/").pop();
+    const localPath = `${RNFS.DocumentDirectoryPath}/${fileName}`;
+
     try {
-      setDownloading(true);
-      setDownloadProgress(0);
-      const isIOS = Platform.OS === 'ios';
-      const dir = isIOS ? RNFS.DocumentDirectoryPath : RNFS.DownloadDirectoryPath;
-      const filePath = `${dir}/${name}`;
-      const downloadOptions = {
-        fromUrl: url,
-        toFile: filePath,
-        background: true,
-        discretionary: true,
-        progressDivider: 2,
-        begin: () => setDownloadProgress(0),
+      const exists = await RNFS.exists(localPath);
+
+      // ✅ Offline open
+      if (exists) {
+        navigation.navigate("PdfViewer", {
+          pdfUrl: `file://${localPath}`,
+          title: item.name,
+        });
+        return;
+      }
+
+      // ✅ Open online immediately (in-app)
+      navigation.navigate("PdfViewer", {
+        pdfUrl,
+        title: item.name,
+      });
+
+      // ⬇️ Background download
+      setProgressMap(p => ({ ...p, [fileName]: 0 }));
+
+      RNFS.downloadFile({
+        fromUrl: pdfUrl,
+        toFile: localPath,
+        progressDivider: 1,
         progress: (res) => {
-          const progress = res.bytesWritten / res.contentLength;
-          setDownloadProgress(progress);
+          if (res.contentLength > 0) {
+            const percent = Math.floor(
+              (res.bytesWritten / res.contentLength) * 100
+            );
+            setProgressMap(p => ({
+              ...p,
+              [fileName]: percent,
+            }));
+          }
         },
-      };
-      await RNFS.downloadFile(downloadOptions).promise;
-      setDownloading(false);
-      setDownloadProgress(1);
-      navigation.navigate('PdfViewer', { filePath });
+      }).promise.then(() => {
+        setProgressMap(p => ({
+          ...p,
+          [fileName]: 100,
+        }));
+      });
     } catch (e) {
-      setDownloading(false);
-      setDownloadProgress(0);
-      alert('Download failed');
+      console.log("Practical PDF error", e);
+      Alert.alert("Error", "Unable to open PDF");
     }
   };
 
+  /* ================= LOADING ================= */
   if (loading) {
     return (
       <View style={[styles.container, styles.center]}>
         <ActivityIndicator size="large" color="#22c55e" />
-        <Text style={styles.loadingText}>Loading files...</Text>
+        <Text style={styles.loadingText}>Loading practical files…</Text>
       </View>
     );
   }
@@ -80,129 +118,155 @@ const PracticalFilesScreen = () => {
   if (!files.length) {
     return (
       <View style={[styles.container, styles.center]}>
-        <Text style={styles.emptyText}>No practical files found for {subjectName || yearLevel}</Text>
+        <Text style={styles.emptyText}>
+          No practical files found for {subjectName || yearLevel}
+        </Text>
       </View>
     );
   }
 
+  /* ================= UI ================= */
   return (
     <View style={styles.container}>
       <TopNavbarBack title={subjectName || yearLevel || "Practical Files"} />
+
       <FlatList
         data={files}
-        keyExtractor={(item, index) => index.toString()}
+        keyExtractor={(_, i) => i.toString()}
         showsVerticalScrollIndicator={false}
-        renderItem={({ item }) => (
-          <TouchableOpacity
-            style={styles.card}
-            activeOpacity={0.9}
-            onPress={() => downloadAndOpenPdf(item.url, item.name)}
-          >
-            <View style={styles.left}>
-              <View style={styles.iconWrap}>
-                <Icon name="document-outline" size={22} color="#ffffff" />
+        renderItem={({ item }) => {
+          const fileName = item.url.split("/").pop();
+          const progress = progressMap[fileName];
+
+          return (
+            <TouchableOpacity
+              style={styles.card}
+              activeOpacity={0.85}
+              onPress={() => handlePdfPress(item)}
+            >
+              <View style={styles.left}>
+                <View style={styles.iconWrap}>
+                  <Icon
+                    name="document-outline"
+                    size={22}
+                    color="#ffffff"
+                  />
+                </View>
+
+                <View style={{ flex: 1 }}>
+                  <Text
+                    style={styles.fileName}
+                    numberOfLines={2}
+                  >
+                    {item.name}
+                  </Text>
+
+                  {progress >= 0 && progress < 100 ? (
+                    <>
+                      <View style={styles.progressBar}>
+                        <View
+                          style={[
+                            styles.progressFill,
+                            { width: `${progress}%` },
+                          ]}
+                        />
+                      </View>
+                      <Text style={styles.meta}>
+                        Downloading… {progress}%
+                      </Text>
+                    </>
+                  ) : (
+                    <Text style={styles.meta}>
+                      Tap to view PDF
+                    </Text>
+                  )}
+                </View>
               </View>
-              <View style={{ flex: 1 }}>
-                <Text style={styles.fileName}>{item.name}</Text>
-                <Text style={styles.meta}>Tap to download & view PDF</Text>
-              </View>
-            </View>
-            <Text style={styles.chev}>›</Text>
-          </TouchableOpacity>
-        )}
+
+              <Icon
+                name="chevron-forward"
+                size={20}
+                color="#9ca3af"
+              />
+            </TouchableOpacity>
+          );
+        }}
       />
-      <Modal visible={downloading} transparent animationType="fade">
-        <View style={styles.modalBg}>
-          <View style={styles.modalContent}>
-            <ActivityIndicator size="large" color="#22c55e" />
-            <Text style={{ color: '#fff', marginTop: 10 }}>Downloading PDF...</Text>
-            <View style={{ width: 200, height: 10, backgroundColor: '#333', borderRadius: 5, marginTop: 16, overflow: 'hidden' }}>
-              <View style={{ width: `${Math.round(downloadProgress * 100)}%`, height: 10, backgroundColor: '#22c55e' }} />
-            </View>
-            <Text style={{ color: '#fff', marginTop: 8 }}>{Math.round(downloadProgress * 100)}%</Text>
-          </View>
-        </View>
-      </Modal>
     </View>
   );
-};
+}
 
-export default PracticalFilesScreen;
-
+/* ================= STYLES ================= */
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#07070a",
     padding: 16,
   },
-  modalBg: {
-    flex: 1,
-    backgroundColor: 'rgba(0,0,0,0.6)',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  modalContent: {
-    backgroundColor: '#222',
-    borderRadius: 16,
-    padding: 24,
-    alignItems: 'center',
-  },
   center: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
   },
   loadingText: {
-    color: '#fff',
-    marginTop: 12,
-    fontSize: 16,
+    color: "#9ca3af",
+    marginTop: 10,
   },
   emptyText: {
-    color: '#fff',
-    fontSize: 16,
-    textAlign: 'center',
+    color: "#9ca3af",
+    fontSize: 15,
+    textAlign: "center",
   },
+
   card: {
-    backgroundColor: '#141417',
-    borderRadius: 22,
-    paddingVertical: 22,
-    paddingHorizontal: 20,
-    marginBottom: 16,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
+    backgroundColor: "#141417",
+    borderRadius: 20,
+    paddingVertical: 16,
+    paddingHorizontal: 16,
+    marginBottom: 14,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
     borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.15)',
-    elevation: 10,
+    borderColor: "rgba(255,255,255,0.12)",
+    ...Platform.select({
+      android: { elevation: 6 },
+    }),
   },
   left: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     flex: 1,
   },
   iconWrap: {
-    width: 48,
-    height: 48,
-    borderRadius: 16,
-    borderWidth: 2,
-    borderColor: '#ffffff',
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginRight: 16,
+    width: 44,
+    height: 44,
+    borderRadius: 14,
+    backgroundColor: "#1c1c21",
+    alignItems: "center",
+    justifyContent: "center",
+    marginRight: 14,
   },
   fileName: {
-    color: '#ffffff',
-    fontSize: 16,
-    fontWeight: '700',
+    color: "#ffffff",
+    fontSize: 15,
+    fontWeight: "600",
     marginBottom: 4,
   },
   meta: {
-    color: '#9ca3af',
+    color: "#9ca3af",
     fontSize: 12,
   },
-  chev: {
-    color: '#ffffff',
-    fontSize: 26,
-    fontWeight: '800',
+
+  progressBar: {
+    height: 6,
+    width: "100%",
+    backgroundColor: "#1f2933",
+    borderRadius: 6,
+    overflow: "hidden",
+    marginBottom: 6,
+  },
+  progressFill: {
+    height: "100%",
+    backgroundColor: "#22c55e",
   },
 });

@@ -13,6 +13,7 @@ import ContactUsScreen from "../screens/TermsCond/ContactUsScreen";
 import ImportantTopicsScreen from "../screens/Important Topics/ImportantTopicsScreen";
 import ImportantTopicsStack from "./ImportantTopicsStack";
 import PyqStack from "./PyqStack";
+import AktuResultWebViewScreen from "../screens/AktuResultWebViewScreen";
 
 const Stack = createNativeStackNavigator();
 
@@ -32,6 +33,11 @@ export default function AppStackNavigator() {
       <Stack.Screen name="ImportantTopics" component={ImportantTopicsScreen} />
       <Stack.Screen name="ImportantTopicsFlow" component={ImportantTopicsStack} />
       <Stack.Screen name="PyqFlow" component={PyqStack} />
+      <Stack.Screen
+        name="AktuResult"
+        component={AktuResultWebViewScreen}
+      />
+
     </Stack.Navigator>
   );
 }

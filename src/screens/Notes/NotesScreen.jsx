@@ -1,60 +1,186 @@
 import React from "react";
-import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  StyleSheet,
+  Platform,
+} from "react-native";
+import Icon from "react-native-vector-icons/Ionicons";
+import TopNavbarBack from '../../components/navigation/TopNavBarBack';
 
 const NOTE_TYPES = [
-  { key: "handwritten", label: "Handwritten Notes" },
-  { key: "digital", label: "Digital Notes" },
-  { key: "multiatoms", label: "Multiatoms Notes" },
-  { key: "short", label: "Short Notes" },
+  {
+    key: "handwritten",
+    label: "Handwritten Notes",
+    desc: "Scanned & handwritten PDFs",
+    icon: "pencil-outline",
+    accent: "#22c55e",
+  },
+  {
+    key: "digital",
+    label: "Digital Notes",
+    desc: "Typed & formatted notes",
+    icon: "laptop-outline",
+    accent: "#3b82f6",
+  },
+  {
+    key: "multiatoms",
+    label: "Multiatoms Notes",
+    desc: "Topic-wise short concepts",
+    icon: "layers-outline",
+    accent: "#a855f7",
+  },
+  {
+    key: "short",
+    label: "Short Notes",
+    desc: "Revision focused notes",
+    icon: "flash-outline",
+    accent: "#f59e0b",
+  },
 ];
 
 export default function NotesScreen({ route, navigation }) {
-  // Optionally get yearLevel from route.params
   const { yearLevel } = route?.params || {};
 
-  const handleCardPress = (type) => {
-    navigation.navigate('NotesSubjectSelect', { yearLevel });
+  const handlePress = (noteType) => {
+    navigation.navigate("NotesSubjectSelect", {
+      yearLevel,
+      noteType,
+    });
   };
 
   return (
     <View style={styles.root}>
-      <Text style={styles.heading}>Select Notes Type</Text>
-      <View style={styles.grid}>
-        {NOTE_TYPES.map((item, idx) => (
-          <TouchableOpacity
-            key={item.key}
-            style={styles.card}
-            activeOpacity={0.85}
-            onPress={() => handleCardPress(item.key)}
-          >
-            <Text style={styles.cardText}>{item.label}</Text>
-          </TouchableOpacity>
-        ))}
+      <TopNavbarBack title={ "Select Notes Type"} />
+      {/* HEADER */}
+      <View style={styles.header}>
+        <Text style={styles.title}>Choose Notes Type</Text>
+        <Text style={styles.subtitle}>
+          {yearLevel} · Select how you want to study
+        </Text>
       </View>
+
+      {/* LIST */}
+      {NOTE_TYPES.map(item => (
+        <TouchableOpacity
+          key={item.key}
+          activeOpacity={0.88}
+          style={styles.card}
+          onPress={() => handlePress(item.key)}
+        >
+          {/* Accent bar */}
+          <View
+            style={[
+              styles.accent,
+              { backgroundColor: item.accent },
+            ]}
+          />
+
+          {/* Icon */}
+          <View
+            style={[
+              styles.iconWrap,
+              { backgroundColor: `${item.accent}22` },
+            ]}
+          >
+            <Icon
+              name={item.icon}
+              size={22}
+              color={item.accent}
+            />
+          </View>
+
+          {/* Text */}
+          <View style={{ flex: 1 }}>
+            <Text style={styles.cardTitle}>
+              {item.label}
+            </Text>
+            <Text style={styles.cardDesc}>
+              {item.desc}
+            </Text>
+          </View>
+
+          {/* Arrow */}
+          <Icon
+            name="chevron-forward"
+            size={20}
+            color="#6b7280"
+          />
+        </TouchableOpacity>
+      ))}
     </View>
   );
 }
 
+/* ================= STYLES ================= */
+
 const styles = StyleSheet.create({
-  root: { flex: 1, backgroundColor: "#07070a", padding: 20 },
-  heading: { color: "#fff", fontSize: 22, fontWeight: "800", marginBottom: 24, textAlign: "center" },
-  grid: {
-    flexDirection: "row",
-    flexWrap: "wrap",
-    justifyContent: "space-between",
-    gap: 16,
+  root: {
+    flex: 1,
+    backgroundColor: "#07070a",
+    padding: 16,
   },
+
+  header: {
+    marginBottom: 20,
+  },
+  title: {
+    color: "#ffffff",
+    fontSize: 24,
+    fontWeight: "800",
+    marginBottom: 6,
+  },
+  subtitle: {
+    color: "#9ca3af",
+    fontSize: 13,
+  },
+
   card: {
-    backgroundColor: "#141417",
+    backgroundColor: "#121216",
     borderRadius: 18,
-    width: '30%',
-    aspectRatio: 1,
+    paddingVertical: 16,
+    paddingHorizontal: 16,
+    marginBottom: 14,
+    flexDirection: "row",
+    alignItems: "center",
+    borderWidth: 1,
+    borderColor: "rgba(255,255,255,0.08)",
+    ...Platform.select({
+      android: { elevation: 5 },
+      ios: {
+        shadowColor: "#000",
+        shadowOpacity: 0.18,
+        shadowRadius: 10,
+        shadowOffset: { width: 0, height: 6 },
+      },
+    }),
+  },
+
+  accent: {
+    width: 4,
+    height: "100%",
+    borderRadius: 4,
+    marginRight: 14,
+  },
+
+  iconWrap: {
+    width: 44,
+    height: 44,
+    borderRadius: 14,
     alignItems: "center",
     justifyContent: "center",
-    marginBottom: 18,
-    borderWidth: 1,
-    borderColor: "rgba(255,255,255,0.15)",
-    elevation: 6,
+    marginRight: 14,
   },
-  cardText: { color: "#fff", fontWeight: "700", fontSize: 15, textAlign: "center" },
+
+  cardTitle: {
+    color: "#ffffff",
+    fontSize: 16,
+    fontWeight: "700",
+    marginBottom: 4,
+  },
+  cardDesc: {
+    color: "#9ca3af",
+    fontSize: 12,
+  },
 });

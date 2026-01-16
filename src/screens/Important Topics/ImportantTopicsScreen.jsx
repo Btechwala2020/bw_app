@@ -6,119 +6,100 @@ import {
   TouchableOpacity,
   ActivityIndicator,
   StyleSheet,
-  Linking,
   Platform,
+  Alert,
 } from "react-native";
-import { useRoute } from "@react-navigation/native";
+import { useRoute, useNavigation } from "@react-navigation/native";
 import Icon from "react-native-vector-icons/Ionicons";
 import TopNavbarBack from "../../components/navigation/TopNavBarBack";
 
-const BASE_URL = "https://pub-96d515e7e6b74514adfe46d7eb1f7fbc.r2.dev";
-
-const ImportantTopicsScreen = () => {
+export default function ImportantTopicsScreen() {
   const route = useRoute();
+  const navigation = useNavigation();
   const { semesterKeys = [], subjectName } = route.params || {};
 
   const [files, setFiles] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const fetchAllFiles = async () => {
+    const fetchFiles = async () => {
       try {
-        let allFiles = [];
+        let all = [];
 
         for (const sem of semesterKeys) {
-          const url = `${BASE_URL}/${sem}/index.json`;
-          console.log("📡 Fetching:", url);
-
-          const res = await fetch(url);
-          console.log("📄 Response status:", res.status);
+          const res = await fetch(
+            `https://pub-96d515e7e6b74514adfe46d7eb1f7fbc.r2.dev/${sem}/index.json`
+          );
 
           if (res.ok) {
             const data = await res.json();
-            allFiles = [...allFiles, ...data];
-          } else {
-            console.warn(`⚠️ No files found in ${sem}`);
+            all.push(...data.filter(i => i.url));
           }
         }
 
-        setFiles(allFiles);
-      } catch (err) {
-        console.error("❌ Fetch error:", err);
+        setFiles(all);
+      } catch (e) {
+        Alert.alert("Error", "Unable to load files");
       } finally {
         setLoading(false);
       }
     };
 
-    fetchAllFiles();
+    fetchFiles();
   }, [semesterKeys]);
 
-  const openPdf = async (url) => {
-    const supported = await Linking.canOpenURL(url);
-    if (supported) {
-      await Linking.openURL(url);
-    } else {
-      alert("Unable to open file");
-    }
+  const handlePdfPress = (item) => {
+    navigation.navigate("PdfViewer", {
+      pdfUrl: item.url,     // 🔥 R2 PDF URL
+      title: item.name,
+    });
   };
 
   if (loading) {
     return (
       <View style={[styles.container, styles.center]}>
         <ActivityIndicator size="large" color="#22c55e" />
-        <Text style={styles.loadingText}>Loading files...</Text>
-      </View>
-    );
-  }
-
-  if (!files.length) {
-    return (
-      <View style={[styles.container, styles.center]}>
-        <Text style={styles.emptyText}>No files found for {subjectName}</Text>
+        <Text style={styles.loadingText}>Loading files…</Text>
       </View>
     );
   }
 
   return (
     <View style={styles.container}>
-      <TopNavbarBack title={subjectName || "PYQ List"} />
-      
+      <TopNavbarBack title={subjectName || "Important Topics"} />
 
       <FlatList
         data={files}
-        keyExtractor={(item, index) => index.toString()}
-        showsVerticalScrollIndicator={false}
+        keyExtractor={(_, i) => i.toString()}
         renderItem={({ item }) => (
           <TouchableOpacity
             style={styles.card}
-            activeOpacity={0.9}
-            onPress={() => openPdf(item.url)}
+            onPress={() => handlePdfPress(item)}
           >
             <View style={styles.left}>
               <View style={styles.iconWrap}>
-                <Icon name="document-outline" size={22} color="#ffffff" />
+                <Icon name="document-outline" size={22} color="#fff" />
               </View>
+
               <View style={{ flex: 1 }}>
                 <Text style={styles.fileName}>{item.name}</Text>
-                <Text style={styles.meta}>Tap to open PDF</Text>
+                <Text style={styles.meta}>Tap to view PDF</Text>
               </View>
             </View>
-            <Text style={styles.chev}>›</Text>
+
+            <Icon name="chevron-forward" size={20} color="#9ca3af" />
           </TouchableOpacity>
         )}
       />
     </View>
   );
-};
-
-export default ImportantTopicsScreen;
+}
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#07070a",
     padding: 16,
-    
   },
   center: {
     justifyContent: "center",
@@ -127,41 +108,18 @@ const styles = StyleSheet.create({
   loadingText: {
     color: "#9ca3af",
     marginTop: 10,
-    fontSize: 14,
-  },
-  emptyText: {
-    color: "#9ca3af",
-    fontSize: 15,
-  },
-  title: {
-    color: "#ffffff",
-    fontSize: 22,
-    fontWeight: "700",
-    marginBottom: 16,
   },
   card: {
-    marginTop: 30,
     backgroundColor: "#141417",
-    borderRadius: 22,
-    paddingVertical: 22,
-    paddingHorizontal: 20,
-    // marginBottom: 16,
+    borderRadius: 20,
+    padding: 16,
+    marginBottom: 14,
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
     borderWidth: 1,
-    borderColor: "rgba(255,255,255,0.15)",
-    ...Platform.select({
-      ios: {
-        shadowColor: "#000",
-        shadowOffset: { width: 0, height: 10 },
-        shadowOpacity: 0.35,
-        shadowRadius: 18,
-      },
-      android: {
-        elevation: 10,
-      },
-    }),
+    borderColor: "rgba(255,255,255,0.12)",
+    ...Platform.select({ android: { elevation: 6 } }),
   },
   left: {
     flexDirection: "row",
@@ -169,28 +127,22 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   iconWrap: {
-    width: 48,
-    height: 48,
-    borderRadius: 16,
-    borderWidth: 2,
-    borderColor: "#fff",
+    width: 44,
+    height: 44,
+    borderRadius: 14,
+    backgroundColor: "#1c1c21",
     alignItems: "center",
     justifyContent: "center",
-    marginRight: 16,
+    marginRight: 14,
   },
   fileName: {
-    color: "#ffffff",
-    fontSize: 16,
-    fontWeight: "700",
-    marginBottom: 4,
+    color: "#fff",
+    fontSize: 15,
+    fontWeight: "600",
+    marginBottom: 6,
   },
   meta: {
     color: "#9ca3af",
     fontSize: 12,
-  },
-  chev: {
-    color: "#ffffff",
-    fontSize: 26,
-    fontWeight: "800",
   },
 });

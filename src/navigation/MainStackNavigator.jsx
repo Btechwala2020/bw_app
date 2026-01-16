@@ -1,6 +1,6 @@
 import React from "react";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
-import { DRAWER_ROUTES } from "./drawerRoutes";
+import { DRAWER_ROUTES } from "./drawerRoutes.js";
 import TopNavbar from "../components/navigation/TopNavbar";
 
 const Stack = createNativeStackNavigator();

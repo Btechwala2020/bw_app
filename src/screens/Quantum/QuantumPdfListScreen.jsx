@@ -6,11 +6,12 @@ import {
   TouchableOpacity,
   ActivityIndicator,
   StyleSheet,
-  Linking,
   Platform,
+  Alert,
 } from "react-native";
-import { useRoute } from "@react-navigation/native";
+import { useRoute, useNavigation } from "@react-navigation/native";
 import Icon from "react-native-vector-icons/Ionicons";
+import RNFS from "react-native-fs";
 import TopNavbarBack from "../../components/navigation/TopNavBarBack";
 
 const BASE_URL =
@@ -18,30 +19,41 @@ const BASE_URL =
 
 export default function QuantumPdfListScreen() {
   const route = useRoute();
+  const navigation = useNavigation();
   const { semesterKeys = [], subjectName = "Quantum" } =
     route.params || {};
 
   const [files, setFiles] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [progressMap, setProgressMap] = useState({});
 
+  /* ================= FETCH FILES ================= */
   useEffect(() => {
     const fetchFiles = async () => {
       try {
         let all = [];
 
         for (const sem of semesterKeys) {
-          const url = `${BASE_URL}/${sem}/quantum/index.json`;
-          const res = await fetch(url);
+          const res = await fetch(
+            `${BASE_URL}/${sem}/quantum/index.json`
+          );
 
           if (res.ok) {
             const data = await res.json();
-            all.push(...data.map(f => ({ ...f, sem })));
+
+            all.push(
+              ...data.filter(i => i.url).map(i => ({
+                ...i,
+                sem,
+              }))
+            );
           }
         }
 
         setFiles(all);
-      } catch (err) {
-        console.log("Quantum fetch error", err);
+      } catch (e) {
+        console.log("Quantum fetch error", e);
+        Alert.alert("Error", "Unable to load quantum PDFs");
       } finally {
         setLoading(false);
       }
@@ -50,11 +62,61 @@ export default function QuantumPdfListScreen() {
     fetchFiles();
   }, [semesterKeys]);
 
-  const openPdf = (sem, file) => {
-    const url = `${BASE_URL}/${sem}/quantum/${file}`;
-    Linking.openURL(url);
+  /* ================= OPEN / DOWNLOAD PDF ================= */
+  const handlePdfPress = async (item) => {
+    const pdfUrl = item.url;
+    const fileName = pdfUrl.split("/").pop();
+    const localPath = `${RNFS.DocumentDirectoryPath}/${fileName}`;
+
+    try {
+      const exists = await RNFS.exists(localPath);
+
+      // ✅ Already downloaded → open offline
+      if (exists) {
+        navigation.navigate("PdfViewer", {
+          pdfUrl: `file://${localPath}`,
+          title: item.name,
+        });
+        return;
+      }
+
+      // ✅ Open online immediately
+      navigation.navigate("PdfViewer", {
+        pdfUrl,
+        title: item.name,
+      });
+
+      // ⬇️ Background download
+      setProgressMap(p => ({ ...p, [fileName]: 0 }));
+
+      RNFS.downloadFile({
+        fromUrl: pdfUrl,
+        toFile: localPath,
+        progressDivider: 1,
+        progress: (res) => {
+          if (res.contentLength > 0) {
+            const percent = Math.floor(
+              (res.bytesWritten / res.contentLength) * 100
+            );
+            setProgressMap(p => ({
+              ...p,
+              [fileName]: percent,
+            }));
+          }
+        },
+      }).promise.then(() => {
+        setProgressMap(p => ({
+          ...p,
+          [fileName]: 100,
+        }));
+      });
+    } catch (e) {
+      console.log("Quantum PDF error", e);
+      Alert.alert("Error", "Unable to open PDF");
+    }
   };
 
+  /* ================= LOADING ================= */
   if (loading) {
     return (
       <View style={[styles.container, styles.center]}>
@@ -76,6 +138,7 @@ export default function QuantumPdfListScreen() {
     );
   }
 
+  /* ================= UI ================= */
   return (
     <View style={styles.container}>
       <TopNavbarBack title={subjectName} />
@@ -84,35 +147,69 @@ export default function QuantumPdfListScreen() {
         data={files}
         keyExtractor={(_, i) => i.toString()}
         showsVerticalScrollIndicator={false}
-        renderItem={({ item }) => (
-          <TouchableOpacity
-            style={styles.card}
-            activeOpacity={0.85}
-            onPress={() => openPdf(item.sem, item.file)}
-          >
-            <View style={styles.left}>
-              <View style={styles.iconWrap}>
-                <Icon name="document-outline" size={22} color="#ffffff" />
+        renderItem={({ item }) => {
+          const fileName = item.url.split("/").pop();
+          const progress = progressMap[fileName];
+
+          return (
+            <TouchableOpacity
+              style={styles.card}
+              activeOpacity={0.85}
+              onPress={() => handlePdfPress(item)}
+            >
+              <View style={styles.left}>
+                <View style={styles.iconWrap}>
+                  <Icon
+                    name="document-outline"
+                    size={22}
+                    color="#ffffff"
+                  />
+                </View>
+
+                <View style={{ flex: 1 }}>
+                  <Text
+                    style={styles.fileName}
+                    numberOfLines={2}
+                  >
+                    {item.name}
+                  </Text>
+
+                  {progress >= 0 && progress < 100 ? (
+                    <>
+                      <View style={styles.progressBar}>
+                        <View
+                          style={[
+                            styles.progressFill,
+                            { width: `${progress}%` },
+                          ]}
+                        />
+                      </View>
+                      <Text style={styles.meta}>
+                        Downloading… {progress}%
+                      </Text>
+                    </>
+                  ) : (
+                    <Text style={styles.meta}>
+                      Tap to view PDF
+                    </Text>
+                  )}
+                </View>
               </View>
 
-              <View style={{ flex: 1 }}>
-                <Text style={styles.fileName} numberOfLines={2}>
-                  {item.name}
-                </Text>
-                <Text style={styles.meta}>
-                  Tap to open PDF
-                </Text>
-              </View>
-            </View>
-
-            <Icon name="chevron-forward" size={20} color="#9ca3af" />
-          </TouchableOpacity>
-        )}
+              <Icon
+                name="chevron-forward"
+                size={20}
+                color="#9ca3af"
+              />
+            </TouchableOpacity>
+          );
+        }}
       />
     </View>
   );
 }
 
+/* ================= STYLES ================= */
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -131,6 +228,7 @@ const styles = StyleSheet.create({
     color: "#9ca3af",
     fontSize: 15,
   },
+
   card: {
     backgroundColor: "#141417",
     borderRadius: 20,
@@ -143,15 +241,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: "rgba(255,255,255,0.12)",
     ...Platform.select({
-      ios: {
-        shadowColor: "#000",
-        shadowOffset: { width: 0, height: 8 },
-        shadowOpacity: 0.25,
-        shadowRadius: 14,
-      },
-      android: {
-        elevation: 6,
-      },
+      android: { elevation: 6 },
     }),
   },
   left: {
@@ -177,5 +267,18 @@ const styles = StyleSheet.create({
   meta: {
     color: "#9ca3af",
     fontSize: 12,
+  },
+
+  progressBar: {
+    height: 6,
+    width: "100%",
+    backgroundColor: "#1f2933",
+    borderRadius: 6,
+    overflow: "hidden",
+    marginBottom: 6,
+  },
+  progressFill: {
+    height: "100%",
+    backgroundColor: "#22c55e",
   },
 });
