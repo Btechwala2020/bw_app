@@ -12,30 +12,10 @@ import Icon from "react-native-vector-icons/Ionicons";
 import TopNavbarBack from "../../components/navigation/TopNavBarBack";
 
 const YEAR_LEVELS = [
-  {
-    id: "1",
-    level: "1st Year",
-    sems: "Sem 1 · Sem 2",
-    semesterKeys: ["sem1", "sem2"],
-  },
-  {
-    id: "2",
-    level: "2nd Year",
-    sems: "Sem 3 · Sem 4",
-    semesterKeys: ["sem3", "sem4"],
-  },
-  {
-    id: "3",
-    level: "3rd Year",
-    sems: "Sem 5 · Sem 6",
-    semesterKeys: ["sem5", "sem6"],
-  },
-  {
-    id: "4",
-    level: "4th Year",
-    sems: "Sem 7 · Sem 8",
-    semesterKeys: ["sem7", "sem8"],
-  },
+  { id: "1", level: "1st Year", sems: "Sem 1 · Sem 2" },
+  { id: "2", level: "2nd Year", sems: "Sem 3 · Sem 4" },
+  { id: "3", level: "3rd Year", sems: "Sem 5 · Sem 6" },
+  { id: "4", level: "4th Year", sems: "Sem 7 · Sem 8" },
 ];
 
 export default function QuantumYearLevelScreen() {
@@ -43,41 +23,46 @@ export default function QuantumYearLevelScreen() {
 
   return (
     <View style={styles.root}>
-      <TopNavbarBack title="Quantum Papers" />
+      <TopNavbarBack title="Quantum" />
 
-      <ScrollView
-        contentContainerStyle={styles.container}
-        showsVerticalScrollIndicator={false}
-      >
-        <Text style={styles.title}>Select Year Academic Year</Text>
+      <ScrollView contentContainerStyle={styles.container}>
+        <Text style={styles.title}>Choose Academic Year</Text>
         <Text style={styles.subtitle}>
-          Access quantum papers year-wise
+          Quantum papers year-wise
         </Text>
 
         {YEAR_LEVELS.map((item) => (
           <TouchableOpacity
             key={item.id}
-            activeOpacity={0.9}
             style={styles.card}
-            onPress={() =>
-              navigation.navigate("QuantumPdfList", {
-                semesterKeys: item.semesterKeys,
+            activeOpacity={0.9}
+            onPress={() => {
+              let semesterKeys = [];
+
+              if (item.level === "1st Year") semesterKeys = ["sem1", "sem2"];
+              else if (item.level === "2nd Year")
+                semesterKeys = ["sem3", "sem4"];
+              else if (item.level === "3rd Year")
+                semesterKeys = ["sem5", "sem6"];
+              else if (item.level === "4th Year")
+                semesterKeys = ["sem7", "sem8"];
+
+              navigation.navigate("QuantumTopics", {
+                semesterKeys,
                 subjectName: item.level,
-              })
-            }
+              });
+            }}
           >
             <View style={styles.left}>
               <View style={styles.iconWrap}>
-                <Icon name="layers-outline" size={22} color="#ffffff" />
+                <Icon name="layers-outline" size={22} color="#fff" />
               </View>
-
               <View>
                 <Text style={styles.cardTitle}>{item.level}</Text>
                 <Text style={styles.cardSub}>{item.sems}</Text>
               </View>
             </View>
-
-            <Icon name="chevron-forward" size={22} color="#ffffff" />
+            <Text style={styles.chev}>›</Text>
           </TouchableOpacity>
         ))}
       </ScrollView>
@@ -86,17 +71,11 @@ export default function QuantumYearLevelScreen() {
 }
 
 const styles = StyleSheet.create({
-  root: {
-    flex: 1,
-    backgroundColor: "#07070a",
-  },
-  container: {
-    padding: 16,
-    paddingTop: 24,
-  },
+  root: { flex: 1, backgroundColor: "#07070a" },
+  container: { padding: 16, paddingTop: 24 },
   title: {
-    color: "#ffffff",
-    fontSize: 22,
+    color: "#fff",
+    fontSize: 24,
     fontWeight: "800",
     marginBottom: 6,
   },
@@ -108,42 +87,28 @@ const styles = StyleSheet.create({
   card: {
     backgroundColor: "#141417",
     borderRadius: 22,
-    paddingVertical: 22,
-    paddingHorizontal: 20,
+    padding: 22,
     marginBottom: 16,
     flexDirection: "row",
-    alignItems: "center",
     justifyContent: "space-between",
+    alignItems: "center",
     borderWidth: 1,
     borderColor: "rgba(255,255,255,0.15)",
-    ...Platform.select({
-      ios: {
-        shadowColor: "#000",
-        shadowOffset: { width: 0, height: 10 },
-        shadowOpacity: 0.35,
-        shadowRadius: 18,
-      },
-      android: {
-        elevation: 10,
-      },
-    }),
+    ...Platform.select({ android: { elevation: 10 } }),
   },
-  left: {
-    flexDirection: "row",
-    alignItems: "center",
-  },
+  left: { flexDirection: "row", alignItems: "center" },
   iconWrap: {
     width: 48,
     height: 48,
     borderRadius: 16,
     borderWidth: 2,
-    borderColor: "#ffffff",
-    alignItems: "center",
+    borderColor: "#fff",
     justifyContent: "center",
+    alignItems: "center",
     marginRight: 16,
   },
   cardTitle: {
-    color: "#ffffff",
+    color: "#fff",
     fontSize: 18,
     fontWeight: "700",
   },
@@ -151,5 +116,10 @@ const styles = StyleSheet.create({
     color: "#9ca3af",
     fontSize: 13,
     marginTop: 4,
+  },
+  chev: {
+    color: "#fff",
+    fontSize: 26,
+    fontWeight: "800",
   },
 });
