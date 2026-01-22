@@ -50,7 +50,7 @@ export default function HomeScreen() {
     { id: 3, title: "Quantum", icon: "bulb-outline", onPress: () => navigation.navigate("QuantumYearLevel") },
         { id: 4, title: "Imp Topic", icon: "layers-outline", onPress: () => navigation.navigate("TopicsYearLevel") },
     // { id: 5, title: "Books", icon: "bookmarks-outline", onPress: () => navigation.navigate("Books") },
-    { id: 6, title: "Practical Files", icon: "notifications-outline", onPress: () => navigation.navigate("Updates") },
+    { id: 6, title: "Practical Files", icon: "notifications-outline", onPress: () => navigation.navigate("PracticalFiles") },
  
 
 {

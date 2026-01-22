@@ -9,49 +9,60 @@ import {
 import Icon from "react-native-vector-icons/Ionicons";
 import TopNavbarBack from "../../components/navigation/TopNavBarBack";
 
-const YEARS = [
-  { label: "1st Year", sems: ["sem1", "sem2"], icon: "school-outline" },
-  { label: "2nd Year", sems: ["sem3", "sem4"], icon: "layers-outline" },
-  { label: "3rd Year", sems: ["sem5", "sem6"], icon: "book-outline" },
-  { label: "4th Year", sems: ["sem7", "sem8"], icon: "ribbon-outline" },
+const TYPES = [
+  {
+    key: "handwritten",
+    title: "Handwritten Notes",
+    subtitle: "Scanned classroom notes",
+    icon: "create-outline",
+  },
+  {
+    key: "digital",
+    title: "Digital Notes",
+    subtitle: "Typed & formatted PDFs",
+    icon: "document-text-outline",
+  },
+  {
+    key: "short",
+    title: "Short Notes",
+    subtitle: "Quick revision points",
+    icon: "flash-outline",
+  },
 ];
 
-export default function NotesYearSelectionScreen({ navigation }) {
+export default function NotesTypeScreen({ route, navigation }) {
+  const { semKey, subjectKey, subjectName } = route.params;
+
   return (
     <View style={styles.container}>
-      <TopNavbarBack title="Notes" showBack={false} />
+      <TopNavbarBack title={subjectName} />
 
-      <Text style={styles.heading}>Select Academic Year</Text>
+      <Text style={styles.heading}>Select Notes Type</Text>
       <Text style={styles.subHeading}>
-        Choose your year to view notes
+        Choose how you want to study
       </Text>
 
-      {YEARS.map((item, i) => (
+      {TYPES.map((item) => (
         <TouchableOpacity
-          key={i}
+          key={item.key}
           activeOpacity={0.9}
           style={styles.card}
           onPress={() =>
-            navigation.navigate("NotesSubject", {
-              semesterKeys: item.sems,
-              yearLabel: item.label,
+            navigation.navigate("NotesPdfList", {
+              semKey,
+              subjectKey,
+              noteType: item.key,
             })
           }
         >
           <View style={styles.left}>
             <View style={styles.iconWrap}>
-              <Icon
-                name={item.icon}
-                size={22}
-                color="#ffffff"
-              />
+              <Icon name={item.icon} size={24} color="#ffffff" />
             </View>
 
-            <View>
-              <Text style={styles.title}>{item.label}</Text>
-              <Text style={styles.sub}>
-                {item.sems.join("  ·  ").toUpperCase()}
-              </Text>
+            <View style={{ flex: 1 }}>
+              <Text style={styles.title}>{item.title}</Text>
+              <Text style={styles.subtitle}>{item.subtitle}</Text>
             </View>
           </View>
 
@@ -79,14 +90,14 @@ const styles = StyleSheet.create({
     color: "#ffffff",
     fontSize: 22,
     fontWeight: "800",
-    marginTop: 10,
+    marginTop: 6,
     marginBottom: 4,
   },
 
   subHeading: {
     color: "#9ca3af",
     fontSize: 13,
-    marginBottom: 20,
+    marginBottom: 22,
   },
 
   card: {
@@ -118,13 +129,13 @@ const styles = StyleSheet.create({
   },
 
   iconWrap: {
-    width: 46,
-    height: 46,
+    width: 50,
+    height: 50,
     borderRadius: 16,
     backgroundColor: "#1c1c21",
     alignItems: "center",
     justifyContent: "center",
-    marginRight: 14,
+    marginRight: 16,
   },
 
   title: {
@@ -134,7 +145,7 @@ const styles = StyleSheet.create({
     marginBottom: 4,
   },
 
-  sub: {
+  subtitle: {
     color: "#9ca3af",
     fontSize: 12,
   },
