@@ -2,6 +2,7 @@ import React from "react";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import PracticalFilesScreen from "../../screens/Practicalfiles/PracticalFilesScreen";
 import PracticalYearSelectionScreen from "../../screens/Practicalfiles/PracticalYearSelectionScreen";
+import PdfViewerScreen from "../../screens/PdfViewerScreen"; // ✅ ADD THIS
 
 const Stack = createNativeStackNavigator();
 
@@ -10,6 +11,10 @@ export default function PracticalStack() {
     <Stack.Navigator screenOptions={{ headerShown: false }}>
       <Stack.Screen name="PracticalYearSelection" component={PracticalYearSelectionScreen} />
       <Stack.Screen name="PracticalFiles" component={PracticalFilesScreen} />
+      <Stack.Screen
+                    name="PdfViewer"
+                    component={PdfViewerScreen}
+                  />
     </Stack.Navigator>
   );
 }

@@ -1,43 +1,45 @@
-import React from 'react';
+import React, { useState } from "react";
 import {
   View,
   Text,
-  StyleSheet,
-  TouchableOpacity,
   FlatList,
-  Platform,
-} from 'react-native';
-import { useNavigation, useRoute } from '@react-navigation/native';
-import Icon from 'react-native-vector-icons/Ionicons';
-import TopNavbarBack from '../../components/navigation/TopNavBarBack';
+  TouchableOpacity,
+  StyleSheet,
+} from "react-native";
+import { useRoute, useNavigation } from "@react-navigation/native";
+import Icon from "react-native-vector-icons/Ionicons";
+import TopNavbarBack from "../../components/navigation/TopNavBarBack";
+import PyqSemesterPicker from "./PyqSemesterPicker";
 
 /* ================= SUBJECT DATA ================= */
-
+/* (unchanged – same as tumhara) */
 const SUBJECTS_BY_SEM = {
   sem1: [
     { name: "Engineering Chemistry", key: "chemistry" },
     { name: "Engineering Maths 1", key: "maths" },
     { name: "Engineering Physics", key: "physics" },
-    { name: "Engineering Maths 2", key: "maths2" },
-    { name: "Soft Skill", key: "softskill" },
+    { name: "Engineering Maths2", key: "maths2" },
+    { name: "SoftSkill", key: "softskill" },
     { name: "Environment and Ecology", key: "environment" },
     { name: "Programming for Problem Solving", key: "pps" },
     { name: "Fundamentals of Electrical Engg", key: "electrical" },
     { name: "Fundamentals of Mechanical Engg", key: "mechanical" },
-    { name: "Fundamentals of Electronics Engg", key: "electronics" },
+    { name: "Fundamentals of Elcectronics Engg", key: "electronics" },
   ],
+
   sem2: [
     { name: "Engineering Chemistry", key: "chemistry" },
     { name: "Engineering Maths 1", key: "maths1" },
     { name: "Engineering Physics", key: "physics" },
-    { name: "Engineering Maths 2", key: "maths2" },
-    { name: "Soft Skill", key: "softskill" },
+    { name: "Engineering Maths2", key: "maths2" },
+    { name: "SoftSkill", key: "softskill" },
     { name: "Environment and Ecology", key: "environment" },
     { name: "Programming for Problem Solving", key: "pps" },
     { name: "Fundamentals of Electrical Engg", key: "electrical" },
     { name: "Fundamentals of Mechanical Engg", key: "mechanical" },
-    { name: "Fundamentals of Electronics Engg", key: "electronics" },
+    { name: "Fundamentals of Elcectronics Engg", key: "electronics" },
   ],
+
   sem3: [
     { name: "Data Structures", key: "dsa" },
     { name: "Digital Electronics", key: "digital" },
@@ -49,214 +51,239 @@ const SUBJECTS_BY_SEM = {
     { name: "COA", key: "coa" },
     { name: "Maths 4", key: "maths4" },
   ],
+
   sem4: [
     { name: "Operating System", key: "os" },
     { name: "Maths 4", key: "maths4" },
     { name: "Digital Electronics", key: "digital" },
-    { name: "OOP with Java", key: "oop" },
+    { name: "Object Oriented Programming with Java", key: "oop" },
     { name: "Technical Communication", key: "tc" },
     { name: "COA", key: "coa" },
     { name: "Microprocessor", key: "micro" },
     { name: "UHV", key: "uhv" },
-    { name: "TAFL", key: "tafl" },
+    { name: "Theory of Automata and Formal Languages", key: "tafl" },
     { name: "Cyber Security", key: "cyber" },
     { name: "Python Programming", key: "python" },
   ],
+
   sem5: [
-    { name: "DBMS", key: "dbms" },
-    { name: "DAA", key: "daa" },
+    { name: "Database Management System", key: "dbms" },
+    { name: "Design and Analysis of Algorithm", key: "daa" },
     { name: "Web Technology", key: "wt" },
-    { name: "COI", key: "coi" },
-    { name: "EITK", key: "eitk" },
+    { name: "Constitution of India", key: "coi" },
+    { name: "Essence of Indian Traditional Knowledge", key: "eitk" },
     { name: "Data Analytics", key: "da" },
     { name: "Computer Graphics", key: "cg" },
-    { name: "OOSD with C++", key: "oosd" },
-    { name: "Machine Learning", key: "ml" },
+    { name: "Object Oriented System Design with C++", key: "oosd" },
+    { name: "Machine Learning Techniques", key: "ml" },
+    { name: "Application of Soft Computing", key: "sc" },
+    { name: "Image Processing", key: "ip" },
+    { name: "Data Warehousing & Data Mining", key: "dwdm" },
   ],
+
   sem6: [
     { name: "Software Engineering", key: "se" },
     { name: "Compiler Design", key: "cd" },
     { name: "Computer Networks", key: "cn" },
-    { name: "COI", key: "coi" },
-    { name: "EITK", key: "eitk" },
+    { name: "Constitution of India", key: "coi" },
+    { name: "Essence of Indian Traditional Knowledge", key: "eitk" },
     { name: "Big Data", key: "bd" },
-    { name: "AR / VR", key: "arvr" },
-    { name: "Blockchain", key: "bad" },
+    { name: "Augmented & Virtual Reality", key: "arvr" },
+    { name: "Blockchain Architecture Design", key: "bad" },
+    { name: "Data Compression", key: "dc" },
+    { name: "Data Analytics", key: "analytics" },
+    { name: "Computer Graphics", key: "comgraphics" },
+    { name: "Object Oriented System Design with C++", key: "oosdcpp" },
   ],
+
   sem7: [
     { name: "Artificial Intelligence", key: "ai" },
     { name: "Deep Learning", key: "dl" },
-    { name: "IoT", key: "iot" },
+    { name: "Internet of Things", key: "iot" },
+    { name: "Vision of Human Society", key: "vhs" },
+    { name: "Renewable Energy Resources", key: "rer" },
+    { name: "Project Management", key: "pme" },
+    { name: "Intro To Women & Gender Studies", key: "itgs" },
+    { name: "Cryptography and Network Security", key: "crypto" },
+    { name: "Data Warehousing and Data Mining", key: "dwdm" },
     { name: "Cloud Computing", key: "cloud" },
+    { name: "Rural Development Administration & Planning", key: "rdap" },
+    { name: "Design Development of Application", key: "dda" },
+    { name: "Natural Language Processing", key: "nlp" },
   ],
+
   sem8: [
     { name: "Artificial Intelligence", key: "ai" },
     { name: "Deep Learning", key: "dl" },
-    { name: "IoT", key: "iot" },
+    { name: "Internet of Things", key: "iot" },
+    { name: "Vision of Human Society", key: "vhs" },
+    { name: "Renewable Energy Resources", key: "rer" },
+    { name: "Project Management", key: "pme" },
+    { name: "Intro To Women & Gender Studies", key: "itgs" },
+    { name: "Cryptography and Network Security", key: "crypto" },
+    { name: "Data Warehousing and Data Mining", key: "dwdm" },
     { name: "Cloud Computing", key: "cloud" },
+    { name: "Rural Development Administration & Planning", key: "rdap" },
+    { name: "Design Development of Application", key: "dda" },
+    { name: "Natural Language Processing", key: "nlp" },
   ],
 };
 
-
-const YEAR_MAPPING = {
-  '1st Year': ['sem1', 'sem2'],
-  '2nd Year': ['sem3', 'sem4'],
-  '3rd Year': ['sem5', 'sem6'],
-  '4th Year': ['sem7', 'sem8'],
-};
-
-const PyqSubjectScreen = () => {
+export default function PyqSubjectScreen() {
   const navigation = useNavigation();
   const route = useRoute();
-  const { semesterKey, yearLevel, semesters } = route.params || {};
+  const { semesters = [], yearLabel = "Subjects" } = route.params || {};
+  const [selectedSubject, setSelectedSubject] = useState(null);
 
-  let subjects = [];
-
-  if (yearLevel) {
-    const sems = YEAR_MAPPING[yearLevel] || semesters || [];
-    const map = {};
-    sems.forEach((s) => {
-      (SUBJECTS_BY_SEM[s] || []).forEach((sub) => {
-        if (!map[sub.key]) map[sub.key] = sub.name;
-      });
-    });
-    subjects = Object.keys(map).map((k) => ({ key: k, name: map[k] }));
-  } else if (semesterKey) {
-    subjects = SUBJECTS_BY_SEM[semesterKey] || [];
-  }
-
-  const findSemesterForSubject = (subjectKey) => {
-    if (semesterKey) return semesterKey;
-    const sems = YEAR_MAPPING[yearLevel] || semesters || [];
-    for (const s of sems) {
-      if ((SUBJECTS_BY_SEM[s] || []).find((x) => x.key === subjectKey)) {
-        return s;
+  /* 🔥 MERGE SUBJECTS */
+  const subjectMap = {};
+  semesters.forEach((sem) => {
+    (SUBJECTS_BY_SEM[sem] || []).forEach((sub) => {
+      if (!subjectMap[sub.key]) {
+        subjectMap[sub.key] = { ...sub, semesters: [sem] };
+      } else {
+        subjectMap[sub.key].semesters.push(sem);
       }
-    }
-    return sems[0];
-  };
+    });
+  });
+
+  const subjectList = Object.values(subjectMap);
 
   return (
-    <View style={styles.container}>
-       <TopNavbarBack title="PYQ" />
-      <Text style={styles.title}>
-        {yearLevel ? yearLevel : (semesterKey || '').toUpperCase()}
-      </Text>
+    <View style={styles.root}>
+      <TopNavbarBack title={yearLabel} />
 
+      {/* HEADER */}
+      <View style={styles.header}>
+        <Text style={styles.heading}>Subjects</Text>
+        <Text style={styles.subHeading}>
+          Select subject to view semester-wise PYQs
+        </Text>
+      </View>
+
+      {/* LIST */}
       <FlatList
-        data={subjects}
+        data={subjectList}
         keyExtractor={(item) => item.key}
-        showsVerticalScrollIndicator={false}
+        contentContainerStyle={{ paddingBottom: 30 }}
         renderItem={({ item }) => (
           <TouchableOpacity
-            activeOpacity={0.9}
+            activeOpacity={0.85}
             style={styles.card}
-            onPress={() =>
-              navigation.navigate('PyqPdfList', {
-                semesterKey: findSemesterForSubject(item.key),
-                subjectKey: item.key,
-                subjectName: item.name,
-              })
-            }
+            onPress={() => setSelectedSubject(item)}
           >
-            {/* LEFT */}
             <View style={styles.left}>
               <View style={styles.iconWrap}>
-                <Icon name="book-outline" size={22} color="#ffffff" />
+                <Icon name="book-outline" size={20} color="#fff" />
               </View>
 
               <View style={{ flex: 1 }}>
-                <Text style={styles.subjectName}>{item.name}</Text>
-                <Text style={styles.meta}>Tap to view PYQs</Text>
+                <Text style={styles.title}>{item.name}</Text>
+                <Text style={styles.subText}>
+                  SEM {item.semesters
+                    .map((s) => s.replace("sem", ""))
+                    .join(" • ")}
+                </Text>
               </View>
             </View>
 
-            {/* RIGHT */}
-            <Text style={styles.chev}>›</Text>
+            <Icon
+              name="chevron-forward"
+              size={20}
+              color="#d1d5db"
+            />
           </TouchableOpacity>
         )}
       />
+
+      {/* SEMESTER PICKER */}
+      <PyqSemesterPicker
+        visible={!!selectedSubject}
+        semesters={selectedSubject?.semesters || []}
+        onClose={() => setSelectedSubject(null)}
+        onSelect={(sem) => {
+          navigation.navigate("PyqPdfList", {
+            semesterKey: sem,
+            subjectKey: selectedSubject.key,
+            subjectName: selectedSubject.name,
+          });
+          setSelectedSubject(null);
+        }}
+      />
     </View>
   );
-};
+}
 
-export default PyqSubjectScreen;
-
-/* ===== STYLES : SAME AS OTHER SCREENS ===== */
+/* ================= STYLES ================= */
 
 const styles = StyleSheet.create({
-  container: {
+  root: {
     flex: 1,
-    backgroundColor: '#07070a',
-    padding: 16,
+    backgroundColor: "#07070a",
+    paddingHorizontal: 16,
   },
 
-  title: {
-    color: '#ffffff',
+  header: {
+    marginTop: 8,
+    marginBottom: 18,
+  },
+
+  heading: {
+    color: "#ffffff",
     fontSize: 22,
-    fontWeight: '700',
-    marginBottom: 16,
+    fontWeight: "800",
+    letterSpacing: 0.3,
+  },
+
+  subHeading: {
+    color: "#9ca3af",
+    fontSize: 13,
+    marginTop: 4,
   },
 
   card: {
-    backgroundColor: '#141417',
-    borderRadius: 22,
-    paddingVertical: 22,
-    paddingHorizontal: 20,
-    marginBottom: 16,
+    backgroundColor: "#141417",
+    borderRadius: 20,
+    paddingVertical: 16,
+    paddingHorizontal: 14,
+    marginBottom: 14,
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
 
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-
+    // premium border
     borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.15)',
-
-    ...Platform.select({
-      ios: {
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 10 },
-        shadowOpacity: 0.35,
-        shadowRadius: 18,
-      },
-      android: {
-        elevation: 10,
-      },
-    }),
+    borderColor: "rgba(255,255,255,0.08)",
   },
 
   left: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 14,
     flex: 1,
   },
 
-  iconWrap: {
+   iconWrap: {
     width: 48,
     height: 48,
     borderRadius: 16,
-    borderWidth: 2,
-    borderColor: '#ffffff',
-    alignItems: 'center',
-    justifyContent: 'center',
+    borderWidth: 1,
+    borderColor: "#fff",
+    justifyContent: "center",
+    alignItems: "center",
     marginRight: 16,
   },
 
-  subjectName: {
-    color: '#ffffff',
-    fontSize: 16,
-    fontWeight: '700',
-    marginBottom: 4,
+  title: {
+    color: "#ffffff",
+    fontSize: 15.5,
+    fontWeight: "700",
+    lineHeight: 20,
   },
 
-  meta: {
-    color: '#9ca3af',
+  subText: {
+    color: "#9ca3af",
     fontSize: 12,
-  },
-
-  chev: {
-    color: '#ffffff',
-    fontSize: 26,
-    fontWeight: '800',
+    marginTop: 4,
   },
 });
