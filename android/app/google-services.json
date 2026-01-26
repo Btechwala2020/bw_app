@@ -1,0 +1,43 @@
+{
+  "project_info": {
+    "project_number": "1082333864522",
+    "project_id": "btechwala-c327d",
+    "storage_bucket": "btechwala-c327d.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1082333864522:android:3a3419c430415b19fd3cb3",
+        "android_client_info": {
+          "package_name": "com.btechwala"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1082333864522-nj4n2ou15rgvd154sugjq0m1v2fv8dii.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.btechwala",
+            "certificate_hash": "4fe252be87ffdfdd76257fb66545ebfba7d3391d"
+          }
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCgnrD5k68dSkNhtiJPS7xjH04OzS-Fplw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1082333864522-uohlr7c4b83i5g4o80pa4aq3e96767ev.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

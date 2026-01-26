@@ -13,6 +13,8 @@ import ContactUsScreen from "../screens/TermsCond/ContactUsScreen";
 import ImportantTopicsScreen from "../screens/Important Topics/ImportantTopicsScreen";
 import ImportantTopicsStack from "./ImportantTopicsStack";
 import PyqStack from "./PyqStack";
+import ProfileScreen from "../screens/ProfileScreen";
+import UpdateScreen from "../screens/UpdateScreen";
 import AktuResultWebViewScreen from "../screens/AktuResultWebViewScreen";
 
 const Stack = createNativeStackNavigator();
@@ -21,6 +23,8 @@ export default function AppStackNavigator() {
   return (
     <Stack.Navigator initialRouteName="Home" screenOptions={{ headerShown: false }}>
       <Stack.Screen name="Home" component={HomeScreen} />
+      {/* <Drawer.Screen name="Profile" component={ProfileScreen} /> */}
+
       <Stack.Screen name="PyqSemester" component={PyqSemesterScreen} />
       <Stack.Screen name="PyqSubjects" component={PyqSubjectScreen} />
       <Stack.Screen name="PyqPdfList" component={PyqPdfListScreen} />
@@ -33,6 +37,7 @@ export default function AppStackNavigator() {
       <Stack.Screen name="ImportantTopics" component={ImportantTopicsScreen} />
       <Stack.Screen name="ImportantTopicsFlow" component={ImportantTopicsStack} />
       <Stack.Screen name="PyqFlow" component={PyqStack} />
+        <Stack.Screen name="Update" component={UpdateScreen} />
       <Stack.Screen
         name="AktuResult"
         component={AktuResultWebViewScreen}

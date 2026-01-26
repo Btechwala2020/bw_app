@@ -1,9 +1,8 @@
 import React from "react";
-import { View, Text, StyleSheet, Platform } from "react-native";
+import { View, Text, StyleSheet } from "react-native";
 import DrawerToggle from "../DrawerToggle";
 
-export default function TopNavbar({ title }) {
-  // Format title: camelCase / snake_case → Proper Title
+export default function TopNavbarBack({ title }) {
   const formatTitle = (str) => {
     if (!str) return "";
     return str
@@ -13,7 +12,8 @@ export default function TopNavbar({ title }) {
       .split(" ")
       .map(
         (word) =>
-          word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()
+          word.charAt(0).toUpperCase() +
+          word.slice(1).toLowerCase()
       )
       .join(" ");
   };
@@ -23,22 +23,24 @@ export default function TopNavbar({ title }) {
   return (
     <View style={styles.wrapper}>
       <View style={styles.navbar}>
-        {/* LEFT (Back / Drawer) */}
+        {/* LEFT BACK */}
         <View style={styles.side}>
           <DrawerToggle showBack />
         </View>
 
-        {/* CENTER TITLE */}
+        {/* TITLE */}
         <Text style={styles.title} numberOfLines={1}>
           {displayTitle}
         </Text>
 
-        {/* RIGHT SPACER (balance center title) */}
+        {/* RIGHT SPACER */}
         <View style={styles.side} />
       </View>
     </View>
   );
 }
+
+/* ================= STYLES ================= */
 
 const styles = StyleSheet.create({
   wrapper: {

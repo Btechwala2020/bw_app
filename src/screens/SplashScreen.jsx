@@ -7,46 +7,68 @@ import {
   Platform,
 } from "react-native";
 import LottieView from "lottie-react-native";
+import auth from "@react-native-firebase/auth";
+import firestore from "@react-native-firebase/firestore";
+import { checkAppUpdate } from "../utils/checkAppUpdate";
 
-const SplashScreen = ({ onFinish }) => {
+const SplashScreen = ({ navigation }) => {
+  // 🔹 USER + PROFILE CHECK (UNCHANGED)
+  const checkUserAndNavigate = async () => {
+    try {
+      const user = auth().currentUser;
+
+      if (!user) {
+        navigation.replace("SignIn");
+        return;
+      }
+
+      const doc = await firestore()
+        .collection("users")
+        .doc(user.uid)
+        .get();
+
+      if (!doc.exists || !doc.data()?.mobile || !doc.data()?.year) {
+        navigation.replace("ProfileSetup");
+      } else {
+        navigation.replace("App");
+      }
+    } catch (e) {
+      console.log("SPLASH ERROR ❌", e);
+      navigation.replace("SignIn");
+    }
+  };
+
   useEffect(() => {
-    const timer = setTimeout(() => {
-      onFinish && onFinish();
-    }, 3800);
-
+    checkAppUpdate(navigation);
+    const timer = setTimeout(checkUserAndNavigate, 1800);
     return () => clearTimeout(timer);
-  }, [onFinish]);
+  }, []);
 
   return (
     <View style={styles.container}>
-      <StatusBar
-        backgroundColor="#07070a"
-        barStyle="light-content"
-      />
+      <StatusBar backgroundColor="#07070a" barStyle="light-content" />
 
-      {/* Logo Animation */}
-      <View style={styles.animationWrap}>
-        <LottieView
-          source={require("../assets/lottie/splash.json")}
-          autoPlay
-          loop={false}
-          style={styles.lottie}
-        />
+      {/* 🌟 GLASS CARD */}
+      <View style={styles.card}>
+        <View style={styles.lottieWrap}>
+          <LottieView
+            source={require("../assets/lottie/splash.json")}
+            autoPlay
+            loop={false}
+            style={styles.lottie}
+          />
+        </View>
       </View>
 
-      {/* App Branding */}
+      {/* BRANDING */}
       <View style={styles.textWrap}>
-        <Text style={styles.appName}>BTechWala</Text>
-        <Text style={styles.tagline}>
-          Notes • PYQs • Quantum
-        </Text>
+        <Text style={styles.logo}>BTechWala</Text>
+        <Text style={styles.tagline}>Notes • PYQs • Quantum</Text>
       </View>
 
-      {/* Company Footer */}
+      {/* FOOTER */}
       <View style={styles.footer}>
-        <Text style={styles.footerText}>
-          by PL Creations
-        </Text>
+        <Text style={styles.footerText}>by PL Creations</Text>
       </View>
     </View>
   );
@@ -54,7 +76,8 @@ const SplashScreen = ({ onFinish }) => {
 
 export default SplashScreen;
 
-/* ================= STYLES ================= */
+/* ================= STYLES (PREMIUM) ================= */
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -63,11 +86,12 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
 
-  animationWrap: {
-    width: 180,
-    height: 180,
-    borderRadius: 40,
-    backgroundColor: "#111114",
+  /* Glass / Card */
+  card: {
+    width: 220,
+    height: 220,
+    borderRadius: 36,
+    backgroundColor: "rgba(255,255,255,0.04)",
     alignItems: "center",
     justifyContent: "center",
     borderWidth: 1,
@@ -76,47 +100,53 @@ const styles = StyleSheet.create({
     ...Platform.select({
       ios: {
         shadowColor: "#000",
-        shadowOffset: { width: 0, height: 12 },
-        shadowOpacity: 0.35,
-        shadowRadius: 22,
+        shadowOffset: { width: 0, height: 18 },
+        shadowOpacity: 0.45,
+        shadowRadius: 28,
       },
       android: {
-        elevation: 10,
+        elevation: 12,
       },
     }),
   },
 
+  lottieWrap: {
+    width: 160,
+    height: 160,
+  },
+
   lottie: {
-    width: 140,
-    height: 140,
+    width: "100%",
+    height: "100%",
   },
 
   textWrap: {
-    marginTop: 26,
+    marginTop: 28,
     alignItems: "center",
   },
 
-  appName: {
+  logo: {
     color: "#ffffff",
-    fontSize: 28,
-    fontWeight: "800",
-    letterSpacing: 0.8,
+    fontSize: 32,
+    fontWeight: "900",
+    letterSpacing: 1.2,
   },
 
   tagline: {
+    marginTop: 8,
     color: "#9ca3af",
     fontSize: 13,
-    marginTop: 6,
+    letterSpacing: 0.4,
   },
 
   footer: {
     position: "absolute",
-    bottom: 32,
+    bottom: 28,
   },
 
   footerText: {
     color: "#6b7280",
     fontSize: 12,
-    letterSpacing: 0.4,
+    letterSpacing: 0.3,
   },
 });

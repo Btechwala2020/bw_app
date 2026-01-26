@@ -5,6 +5,8 @@ import PracticalStack from "./Stack/PracticalStack";
 import PyqStack from "./Stack/PyqStack";
 import ImportantTopicsStack from "./Stack/ImportantTopicsStack";
 import QuantumStack from "./Stack/QuantumStack";
+import ProfileScreen from "../screens/ProfileScreen.jsx";
+
 
 import AboutUsScreen from "../screens/TermsCond/AboutUsScreen.jsx";
 import PrivacyPolicyScreen from "../screens/TermsCond/PrivacyPolicyScreen.jsx";
@@ -15,17 +17,24 @@ import AktuResultWebViewScreen from "../screens/AktuResultWebViewScreen";
 
 
 export const DRAWER_ROUTES = [
+  
   {
     name: "Home",
     label: "Home",
     icon: "home-outline",
     component: HomeScreen,
   },
-  
+   {
+  name: "Profile",
+  label: "My Profile",
+  icon: "person-outline",
+  component: ProfileScreen,
+},
+
 
   {
     name: "Notes",
-    label: "Notes",
+    label: "Quality Notes",
     icon: "book-outline",
     component: NotesStack,
   },
@@ -36,12 +45,16 @@ export const DRAWER_ROUTES = [
     icon: "document-text-outline",
     component: PyqStack,
   },
+ 
+
+
   {
     name: "TopicsYearLevel",
     label: "Important Topics",
     icon: "bulb-outline",
     component: ImportantTopicsStack,
   },
+  
   {
     name: "QuantumYearLevel",
     label: "Latest Quantum",
@@ -60,11 +73,15 @@ export const DRAWER_ROUTES = [
   icon: "school-outline",
   component: AktuResultWebViewScreen,
 },
+ 
+  
+
+ 
   {
-    name: "AboutUs",
-    label: "About Us",
-    icon: "information-circle-outline",
-    component: AboutUsScreen,
+    name: "TermsConditions",
+    label: "Terms & Conditions",
+    icon: "document-outline",
+    component: TermsConditionsScreen,
   },
   {
     name: "PrivacyPolicy",
@@ -72,22 +89,23 @@ export const DRAWER_ROUTES = [
     icon: "shield-checkmark-outline",
     component: PrivacyPolicyScreen,
   },
-  {
-    name: "ContactUs",
-    label: "Contact Us",
-    icon: "mail-outline",
-    component: ContactUsScreen,
-  },
-  {
+   {
     name: "Disclaimer",
     label: "Disclaimer",
     icon: "alert-circle-outline",
     component: DisclaimerScreen,
   },
-  {
-    name: "TermsConditions",
-    label: "Terms & Conditions",
-    icon: "document-outline",
-    component: TermsConditionsScreen,
+  
+    {
+    name: "ContactUs",
+    label: "Contact Us",
+    icon: "mail-outline",
+    component: ContactUsScreen,
+  },
+   {
+    name: "AboutUs",
+    label: "About Us",
+    icon: "information-circle-outline",
+    component: AboutUsScreen,
   },
 ];
