@@ -9,6 +9,8 @@ import {
   Platform,
 } from "react-native";
 import Icon from "react-native-vector-icons/Ionicons";
+import { SafeAreaView } from "react-native-safe-area-context";
+import { StatusBar } from "react-native";
 import TopNavbarBack from "../../components/navigation/TopNavBarBack";
 
 export default function NotesSubjectScreen({ route, navigation }) {
@@ -60,6 +62,8 @@ export default function NotesSubjectScreen({ route, navigation }) {
   }
 
   return (
+    <SafeAreaView style={{ flex: 1, backgroundColor: "#07070a" }} edges={["top", "bottom"]}>
+      <StatusBar barStyle="light-content" backgroundColor="#07070a" translucent={false} />
     <View style={styles.container}>
       <TopNavbarBack title={yearLabel} />
 
@@ -105,6 +109,7 @@ export default function NotesSubjectScreen({ route, navigation }) {
         )}
       />
     </View>
+    </SafeAreaView>
   );
 }
 

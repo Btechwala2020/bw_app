@@ -7,6 +7,9 @@ import {
   StyleSheet,
 } from "react-native";
 import Icon from "react-native-vector-icons/Ionicons";
+import { SafeAreaView } from "react-native-safe-area-context";
+import { StatusBar } from "react-native";
+
 
 export default function PyqSemesterPicker({
   visible,
@@ -15,6 +18,7 @@ export default function PyqSemesterPicker({
   onSelect,
 }) {
   return (
+
     <Modal transparent visible={visible} animationType="fade">
       <View style={styles.overlay}>
         <View style={styles.sheet}>

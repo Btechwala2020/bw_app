@@ -2,34 +2,46 @@ import React from "react";
 import { View, Text, ScrollView, StyleSheet, Platform } from "react-native";
 import Icon from "react-native-vector-icons/Ionicons";
 import TopNavbarBack from '../../components/navigation/TopNavBarBack';
+import { SafeAreaView } from "react-native-safe-area-context";
+import { StatusBar } from "react-native";
 export default function ContactUsScreen() {
   return (
-    <View style={{ flex: 1, backgroundColor: '#07070a' }}>
-      <TopNavbarBack title="Contact Us" />
-      <ScrollView style={styles.container} contentContainerStyle={styles.content}>
-        <View style={styles.header}>
-          <View style={styles.iconWrap}>
-            <Icon name="mail-outline" size={28} color="#fff" />
+    <SafeAreaView
+      style={{ flex: 1, backgroundColor: "#07070a" }}
+      edges={["top", "bottom"]}
+    >
+      <StatusBar
+        barStyle="light-content"
+        backgroundColor="#07070a"
+        translucent={false}
+      />
+      <View style={{ flex: 1, backgroundColor: '#07070a' }}>
+        <TopNavbarBack title="Contact Us" />
+        <ScrollView style={styles.container} contentContainerStyle={styles.content}>
+          <View style={styles.header}>
+            <View style={styles.iconWrap}>
+              <Icon name="mail-outline" size={28} color="#fff" />
+            </View>
+            <View>
+              <Text style={styles.title}>Contact Us</Text>
+              <Text style={styles.subtitle}>We are here to help</Text>
+            </View>
           </View>
-          <View>
-            <Text style={styles.title}>Contact Us</Text>
-            <Text style={styles.subtitle}>We are here to help</Text>
+          <View style={styles.card}>
+            <Text style={styles.text}>
+              For feedback, suggestions, or content related queries, feel free to
+              contact us.
+            </Text>
+            <Text style={styles.text}>
+              📧 Email: support@btechwala.app
+            </Text>
+            <Text style={styles.text}>
+              We usually respond within 24–48 hours.
+            </Text>
           </View>
-        </View>
-        <View style={styles.card}>
-          <Text style={styles.text}>
-            For feedback, suggestions, or content related queries, feel free to
-            contact us.
-          </Text>
-          <Text style={styles.text}>
-            📧 Email: support@btechwala.app
-          </Text>
-          <Text style={styles.text}>
-            We usually respond within 24–48 hours.
-          </Text>
-        </View>
-      </ScrollView>
-    </View>
+        </ScrollView>
+      </View>
+    </SafeAreaView>
   );
 }
 const styles = StyleSheet.create({

@@ -8,6 +8,8 @@ import {
 } from "react-native";
 import Icon from "react-native-vector-icons/Ionicons";
 import TopNavbarBack from "../../components/navigation/TopNavBarBack";
+import { SafeAreaView } from "react-native-safe-area-context";
+import { StatusBar } from "react-native";
 
 const YEARS = [
   { label: "1st Year", sems: ["sem1", "sem2"], icon: "school-outline" },
@@ -18,6 +20,7 @@ const YEARS = [
 
 export default function NotesYearSelectionScreen({ navigation }) {
   return (
+    
     <View style={styles.container}>
       <TopNavbarBack title="Notes" showBack={false} />
 

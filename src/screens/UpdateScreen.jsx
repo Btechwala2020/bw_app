@@ -1,91 +1,50 @@
-import React, { useState } from "react";
+import React from "react";
 import {
   View,
   Text,
   StyleSheet,
   TouchableOpacity,
-  Alert,
-  Platform,
+  Linking,
+  StatusBar,
 } from "react-native";
-import RNFS from "react-native-fs";
-import { Linking } from "react-native";
+import LottieView from "lottie-react-native";
 
 const UpdateScreen = ({ route }) => {
-  const { updateData } = route.params || {};
-  const [downloading, setDownloading] = useState(false);
-  const [progress, setProgress] = useState(0);
+  const { updateData } = route.params;
 
-  const downloadAndInstall = async () => {
-    if (!updateData?.updateUrl) {
-      Alert.alert("Error", "Update URL not found");
-      return;
-    }
-
+  const openBrowser = async () => {
     try {
-      setDownloading(true);
-      setProgress(0);
-
-      const apkPath = `${RNFS.DownloadDirectoryPath}/btechwala_${Date.now()}.apk`;
-
-      const downloadOptions = {
-        fromUrl: updateData.updateUrl,
-        toFile: apkPath,
-        progress: (res) => {
-          if (res.contentLength > 0) {
-            setProgress(Math.floor((res.bytesWritten / res.contentLength) * 100));
-          }
-        },
-        progressDivider: 1,
-      };
-
-      const ret = RNFS.downloadFile(downloadOptions);
-      const result = await ret.promise;
-
-      if (result.statusCode === 200) {
-        if (Platform.OS === "android") {
-          // Open the APK file to trigger install prompt
-          Linking.openURL(`file://${apkPath}`);
-        } else {
-          Alert.alert("Downloaded", "APK downloaded to: " + apkPath);
-        }
-      } else {
-        throw new Error("Download failed with status " + result.statusCode);
-      }
+      await Linking.openURL(updateData.updateUrl);
     } catch (e) {
-      console.log("UPDATE ERROR ❌", e);
-      Alert.alert(
-        "Update Failed",
-        "Unable to install update. Please try again."
-      );
-    } finally {
-      setDownloading(false);
+      console.log("BROWSER OPEN ERROR ❌", e);
     }
   };
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Update Available</Text>
+      <StatusBar backgroundColor="#07070a" barStyle="light-content" />
 
+      {/* LOTTIE */}
+      <View style={styles.lottieWrap}>
+        
+      </View>
+
+      {/* TEXT */}
+      <Text style={styles.title}>Update Available</Text>
       <Text style={styles.desc}>
-        A new version ({updateData?.latestVersion}) is
-        available. Please update to continue using the app.
+        A new version ({updateData.latestVersion}) is available.
+        Please update to continue using the app.
       </Text>
 
-      {downloading && (
-        <Text style={styles.progress}>
-          Downloading… {progress}%
-        </Text>
-      )}
-
-      <TouchableOpacity
-        style={styles.button}
-        onPress={downloadAndInstall}
-        disabled={downloading}
-      >
-        <Text style={styles.buttonText}>
-          {downloading ? "Updating…" : "Update Now"}
-        </Text>
+      {/* BUTTON */}
+      <TouchableOpacity style={styles.button} onPress={openBrowser}>
+        <Text style={styles.buttonText}>Download Update</Text>
       </TouchableOpacity>
+
+      {/* NOTE */}
+      <Text style={styles.note}>
+        After download, tap the APK from notification bar to install.
+      </Text>
     </View>
   );
 };
@@ -103,25 +62,26 @@ const styles = StyleSheet.create({
     padding: 24,
   },
 
+  lottieWrap: {
+    width: 220,
+    height: 220,
+    marginBottom: 10,
+  },
+
   title: {
-    color: "#fff",
+    color: "#ffffff",
     fontSize: 26,
     fontWeight: "800",
-    marginBottom: 12,
+    marginTop: 10,
   },
 
   desc: {
     color: "#9ca3af",
     fontSize: 14,
     textAlign: "center",
-    marginBottom: 30,
+    marginTop: 12,
+    marginBottom: 28,
     lineHeight: 20,
-  },
-
-  progress: {
-    color: "#22c55e",
-    marginBottom: 14,
-    fontSize: 14,
   },
 
   button: {
@@ -134,8 +94,15 @@ const styles = StyleSheet.create({
   },
 
   buttonText: {
-    color: "#000",
+    color: "#000000",
     fontSize: 15,
     fontWeight: "600",
+  },
+
+  note: {
+    marginTop: 16,
+    fontSize: 12,
+    color: "#6b7280",
+    textAlign: "center",
   },
 });

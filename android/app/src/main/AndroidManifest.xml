@@ -3,9 +3,17 @@
     <uses-permission android:name="android.permission.INTERNET" />
    
 
+
 <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
-<uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES" />
 <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+<!-- Internet -->
+<!-- <uses-permission android:name="android.permission.INTERNET"/> -->
+
+<!-- Notifications (Android 13+) -->
+<uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>
+
+<!-- Firebase -->
+<uses-permission android:name="android.permission.WAKE_LOCK"/>
 
     <application
       android:name=".MainApplication"
@@ -16,6 +24,33 @@
       android:theme="@style/AppTheme"
       android:usesCleartextTraffic="${usesCleartextTraffic}"
       android:supportsRtl="true">
+      <provider
+        android:name="androidx.core.content.FileProvider"
+        android:authorities="${applicationId}.provider"
+        android:exported="false"
+        android:grantUriPermissions="true">
+        <meta-data
+          android:name="android.support.FILE_PROVIDER_PATHS"
+          android:resource="@xml/file_paths" />
+      </provider>
+      <!-- FCM: Firebase Messaging Service -->
+      <service
+        android:name="io.invertase.firebase.messaging.ReactNativeFirebaseMessagingService"
+        android:exported="true"
+        tools:replace="android:exported"
+        xmlns:tools="http://schemas.android.com/tools">
+        <intent-filter>
+          <action android:name="com.google.firebase.MESSAGING_EVENT" />
+        </intent-filter>
+      </service>
+      <receiver
+        android:name="io.invertase.firebase.messaging.ReactNativeFirebaseMessagingReceiver"
+        android:exported="true"
+        android:enabled="true">
+        <intent-filter>
+          <action android:name="io.invertase.firebase.messaging.NOTIFICATION_OPEN" />
+        </intent-filter>
+      </receiver>
       <activity
         android:name=".MainActivity"
         android:label="@string/app_name"

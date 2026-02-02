@@ -10,6 +10,8 @@ import { useRoute, useNavigation } from "@react-navigation/native";
 import Icon from "react-native-vector-icons/Ionicons";
 import TopNavbarBack from "../../components/navigation/TopNavBarBack";
 import PyqSemesterPicker from "./PyqSemesterPicker";
+import { SafeAreaView } from "react-native-safe-area-context";
+import { StatusBar } from "react-native";
 
 /* ================= SUBJECT DATA ================= */
 /* (unchanged – same as tumhara) */
@@ -150,6 +152,9 @@ export default function PyqSubjectScreen() {
   const subjectList = Object.values(subjectMap);
 
   return (
+    
+    <SafeAreaView style={{ flex: 1, backgroundColor: "#07070a" }} edges={["top", "bottom"]}>
+      <StatusBar barStyle="light-content" backgroundColor="#07070a" translucent={false} />
     <View style={styles.root}>
       <TopNavbarBack title={yearLabel} />
 
@@ -211,6 +216,7 @@ export default function PyqSubjectScreen() {
         }}
       />
     </View>
+    </SafeAreaView>
   );
 }
 

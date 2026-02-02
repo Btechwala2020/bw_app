@@ -10,6 +10,8 @@ import { useRoute, useNavigation } from "@react-navigation/native";
 import Icon from "react-native-vector-icons/Ionicons";
 import TopNavbarBack from "../../components/navigation/TopNavBarBack";
 import LoaderScreen from "../../components/LoaderScreen";
+import { SafeAreaView } from "react-native-safe-area-context";
+import { StatusBar } from "react-native";
 
 export default function PyqPdfListScreen() {
   const navigation = useNavigation();
@@ -63,6 +65,9 @@ export default function PyqPdfListScreen() {
 
   /* ================= SUCCESS ================= */
   return (
+    
+    <SafeAreaView style={{ flex: 1, backgroundColor: "#07070a" }} edges={["top", "bottom"]}>
+      <StatusBar barStyle="light-content" backgroundColor="#07070a" translucent={false} />
     <View style={styles.root}>
       <TopNavbarBack title={subjectName} />
 
@@ -103,6 +108,7 @@ export default function PyqPdfListScreen() {
         )}
       />
     </View>
+    </SafeAreaView>
   );
 }
 

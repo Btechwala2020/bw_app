@@ -1,10 +1,21 @@
 import React from "react";
 import { View, StyleSheet } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
+import { StatusBar } from "react-native";
 import { WebView } from "react-native-webview";
 import TopNavbarBack from "../components/navigation/TopNavBarBack";
 
 export default function AktuResultWebViewScreen() {
   return (
+    <SafeAreaView
+        style={{ flex: 1, backgroundColor: "#07070a" }}
+        edges={["top", "bottom"]}
+      >
+      <StatusBar
+        barStyle="light-content"
+        backgroundColor="#07070a"
+        translucent={false}
+      />
     <View style={styles.container}>
       <TopNavbarBack title="AKTU Result" />
 
@@ -18,6 +29,7 @@ export default function AktuResultWebViewScreen() {
         style={{ flex: 1 }}
       />
     </View>
+    </SafeAreaView>
   );
 }
 

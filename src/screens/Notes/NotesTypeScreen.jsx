@@ -8,6 +8,8 @@ import {
 } from "react-native";
 import Icon from "react-native-vector-icons/Ionicons";
 import TopNavbarBack from "../../components/navigation/TopNavBarBack";
+import { SafeAreaView } from "react-native-safe-area-context";
+import { StatusBar } from "react-native";
 
 const TYPES = [
   {
@@ -34,6 +36,8 @@ export default function NotesTypeScreen({ route, navigation }) {
   const { semKey, subjectKey, subjectName } = route.params;
 
   return (
+    <SafeAreaView style={{ flex: 1, backgroundColor: "#07070a" }} edges={["top", "bottom"]}>
+      <StatusBar barStyle="light-content" backgroundColor="#07070a" translucent={false} />
     <View style={styles.container}>
       <TopNavbarBack title={subjectName} />
 
@@ -74,6 +78,7 @@ export default function NotesTypeScreen({ route, navigation }) {
         </TouchableOpacity>
       ))}
     </View>
+    </SafeAreaView>
   );
 }
 

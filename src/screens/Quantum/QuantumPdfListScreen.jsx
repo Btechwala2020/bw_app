@@ -12,6 +12,8 @@ import {
 import { useRoute, useNavigation } from "@react-navigation/native";
 import Icon from "react-native-vector-icons/Ionicons";
 import TopNavbarBack from "../../components/navigation/TopNavBarBack";
+import { SafeAreaView } from "react-native-safe-area-context";
+import { StatusBar } from "react-native";
 
 export default function QuantumTopicsScreen() {
   const route = useRoute();
@@ -57,10 +59,14 @@ export default function QuantumTopicsScreen() {
 
   if (loading) {
     return (
-      <View style={[styles.container, styles.center]}>
-        <ActivityIndicator size="large" color="#22c55e" />
-        <Text style={styles.loadingText}>Loading files…</Text>
-      </View>
+      
+      <SafeAreaView style={{ flex: 1, backgroundColor: "#07070a" }} edges={["top", "bottom"]}>
+        <StatusBar barStyle="light-content" backgroundColor="#07070a" translucent={false} />
+        <View style={[styles.container, styles.center]}>
+          <ActivityIndicator size="large" color="#22c55e" />
+          <Text style={styles.loadingText}>Loading files…</Text>
+        </View>
+      </SafeAreaView>
     );
   }
 

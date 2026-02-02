@@ -12,6 +12,8 @@ import {
 import { useRoute, useNavigation } from "@react-navigation/native";
 import Icon from "react-native-vector-icons/Ionicons";
 import TopNavbarBack from "../../components/navigation/TopNavBarBack";
+import { SafeAreaView } from "react-native-safe-area-context";
+import { StatusBar } from "react-native";
 
 export default function ImportantTopicsScreen() {
   const route = useRoute();
@@ -65,6 +67,8 @@ export default function ImportantTopicsScreen() {
   }
 
   return (
+    <SafeAreaView style={{ flex: 1, backgroundColor: "#07070a" }} edges={["top", "bottom"]}>
+      <StatusBar barStyle="light-content" backgroundColor="#07070a" translucent={false} />
     <View style={styles.container}>
       <TopNavbarBack title={subjectName || "Important Topics"} />
 
@@ -92,6 +96,7 @@ export default function ImportantTopicsScreen() {
         )}
       />
     </View>
+    </SafeAreaView>
   );
 }
 

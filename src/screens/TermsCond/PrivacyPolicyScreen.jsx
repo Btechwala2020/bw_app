@@ -1,10 +1,21 @@
 import React from "react";
 import { View, Text, ScrollView, StyleSheet, Platform } from "react-native";
 import Icon from "react-native-vector-icons/Ionicons";
+import { SafeAreaView } from "react-native-safe-area-context";
+import { StatusBar } from "react-native";
 import TopNavbarBack from '../../components/navigation/TopNavBarBack';
 
 export default function PrivacyPolicyScreen() {
   return (
+    <SafeAreaView
+      style={{ flex: 1, backgroundColor: "#07070a" }}
+      edges={["top", "bottom"]}
+    >
+      <StatusBar
+        barStyle="light-content"
+        backgroundColor="#07070a"
+        translucent={false}
+      />
     <View style={{ flex: 1, backgroundColor: '#07070a' }}>
       <TopNavbarBack title="Privacy Policy" />
       <ScrollView style={styles.container} contentContainerStyle={styles.content}>
@@ -35,6 +46,7 @@ export default function PrivacyPolicyScreen() {
         </View>
       </ScrollView>
     </View>
+    </SafeAreaView>
   );
 }
 const styles = StyleSheet.create({

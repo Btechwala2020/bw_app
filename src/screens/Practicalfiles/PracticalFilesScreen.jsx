@@ -11,6 +11,8 @@ import {
 } from "react-native";
 import { useRoute, useNavigation } from "@react-navigation/native";
 import Icon from "react-native-vector-icons/Ionicons";
+import { SafeAreaView } from "react-native-safe-area-context";
+import { StatusBar } from "react-native";
 import TopNavbarBack from "../../components/navigation/TopNavBarBack";
 
 export default function PracticalFilesScreen() {
@@ -65,6 +67,8 @@ export default function PracticalFilesScreen() {
   }
 
   return (
+    <SafeAreaView style={{ flex: 1, backgroundColor: "#07070a" }} edges={["top", "bottom"]}>
+      <StatusBar barStyle="light-content" backgroundColor="#07070a" translucent={false} />
     <View style={styles.container}>
       <TopNavbarBack title={subjectName || "Practicals"} />
 
@@ -89,6 +93,7 @@ export default function PracticalFilesScreen() {
         )}
       />
     </View>
+    </SafeAreaView>
   );
 }
 

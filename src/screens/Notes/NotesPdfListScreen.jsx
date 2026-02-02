@@ -9,6 +9,8 @@ import {
   Platform,
 } from "react-native";
 import { useNavigation, useRoute } from "@react-navigation/native";
+import { SafeAreaView } from "react-native-safe-area-context";
+import { StatusBar } from "react-native";
 import Icon from "react-native-vector-icons/Ionicons";
 import TopNavbarBack from "../../components/navigation/TopNavBarBack";
 
@@ -54,6 +56,8 @@ export default function NotesPdfListScreen() {
   }
 
   return (
+    <SafeAreaView style={{ flex: 1, backgroundColor: "#07070a" }} edges={["top", "bottom"]}>
+      <StatusBar barStyle="light-content" backgroundColor="#07070a" translucent={false} />
     <View style={styles.container}>
       <TopNavbarBack title="Notes" />
 
@@ -115,6 +119,7 @@ export default function NotesPdfListScreen() {
         )}
       />
     </View>
+    </SafeAreaView>
   );
 }
 

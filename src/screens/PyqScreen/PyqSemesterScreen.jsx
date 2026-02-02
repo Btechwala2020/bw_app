@@ -8,6 +8,8 @@ import {
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import Icon from "react-native-vector-icons/Ionicons";
+import { SafeAreaView } from "react-native-safe-area-context";
+import { StatusBar } from "react-native";
 import TopNavbarBack from "../../components/navigation/TopNavBarBack";
 
 const YEAR_LEVELS = [
@@ -21,6 +23,9 @@ export default function PyqSemesterScreen() {
   const navigation = useNavigation();
 
   return (
+    
+    <SafeAreaView style={{ flex: 1, backgroundColor: "#07070a" }} edges={["top", "bottom"]}>
+      <StatusBar barStyle="light-content" backgroundColor="#07070a" translucent={false} />
     <View style={styles.root}>
       <TopNavbarBack title="Previous Year Questions" />
 
@@ -63,6 +68,7 @@ export default function PyqSemesterScreen() {
         ))}
       </ScrollView>
     </View>
+    </SafeAreaView>
   );
 }
 

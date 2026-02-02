@@ -7,12 +7,15 @@ import {
   Platform,
 } from "react-native";
 import LottieView from "lottie-react-native";
+
 import auth from "@react-native-firebase/auth";
 import firestore from "@react-native-firebase/firestore";
+
 import { checkAppUpdate } from "../utils/checkAppUpdate";
 
 const SplashScreen = ({ navigation }) => {
-  // 🔹 USER + PROFILE CHECK (UNCHANGED)
+
+  /* ================= USER + PROFILE CHECK ================= */
   const checkUserAndNavigate = async () => {
     try {
       const user = auth().currentUser;
@@ -38,17 +41,27 @@ const SplashScreen = ({ navigation }) => {
     }
   };
 
+  /* ================= SPLASH FLOW ================= */
   useEffect(() => {
-    checkAppUpdate(navigation);
-    const timer = setTimeout(checkUserAndNavigate, 1800);
-    return () => clearTimeout(timer);
+    const init = async () => {
+      // ⏳ splash animation delay
+      await new Promise((res) => setTimeout(res, 2000));
+
+      // 🔥 update check
+      const updating = await checkAppUpdate(navigation);
+      if (updating) return;
+
+      // 👉 normal auth flow
+      await checkUserAndNavigate();
+    };
+
+    init();
   }, []);
 
   return (
     <View style={styles.container}>
       <StatusBar backgroundColor="#07070a" barStyle="light-content" />
 
-      {/* 🌟 GLASS CARD */}
       <View style={styles.card}>
         <View style={styles.lottieWrap}>
           <LottieView
@@ -60,13 +73,11 @@ const SplashScreen = ({ navigation }) => {
         </View>
       </View>
 
-      {/* BRANDING */}
       <View style={styles.textWrap}>
         <Text style={styles.logo}>BTechWala</Text>
         <Text style={styles.tagline}>Notes • PYQs • Quantum</Text>
       </View>
 
-      {/* FOOTER */}
       <View style={styles.footer}>
         <Text style={styles.footerText}>by PL Creations</Text>
       </View>
@@ -76,7 +87,10 @@ const SplashScreen = ({ navigation }) => {
 
 export default SplashScreen;
 
-/* ================= STYLES (PREMIUM) ================= */
+/* ================= STYLES ================= */
+// ⚠️ styles bilkul same rakhe hain (no change)
+
+/* ================= STYLES ================= */
 
 const styles = StyleSheet.create({
   container: {
@@ -86,7 +100,6 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
 
-  /* Glass / Card */
   card: {
     width: 220,
     height: 220,
